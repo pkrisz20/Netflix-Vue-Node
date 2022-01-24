@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Poppins:wght@300;400;500;700;900&display=swap');
+
+$c-main-font: 'Montserrat', sans-serif;
+
+$c-dark-theme: #111;
+$c-green-theme: #00B60B;
+$c-skyblue: #3D8D8F;
+$c-dark-blue: #082A2E;
+$c-blue: #2874A6;
+$c-success: #117a4b;
+$c-error: #b31e1e;
+$c-yellow: #B4E800;
+$c-orange: #FBBC05;
+$c-purple: #A500D8;
+
+$c-facebook: #4267B2;
+$c-instagram: #E1306C;
+$c-twitter: #1DA1F2;
+$c-discord: #5865F2;
+$c-github: #967bb6;
+
+$c-white: #fff;
+$c-e: #eee;
+$c-d: #ddd;
+$c-c: #ccc;
+$c-b: #bbb;
+$c-a: #aaa;
+$c-9: #999;
+$c-6: #666;
+$c-3: #333;
+$c-black: #000;
+$c-red: #c70000;
+
+$r-mobile-s: "(min-width: 420px)";
+$r-mobile-l: "(min-width: 540px)";
+$r-tablet: "(min-width: 768px)";
+$r-laptop-s: "(min-width: 1024px)";
+$r-laptop-m: "(min-width: 1200px)";
+$r-laptop-xl: "(min-width: 1500px)";
+
+$r-max-mobile-s: "(max-width: 419px)";
+$r-max-mobile-l: "(max-width: 539px)";
+$r-max-tablet: "(max-width: 767px)";
+$r-max-laptop-s: "(max-width: 1023px)";
+$r-max-laptop-m: "(max-width: 1199px)";
+$r-max-laptop-xl: "(max-width: 1499px)";
