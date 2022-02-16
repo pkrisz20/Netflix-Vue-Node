@@ -1,30 +1,24 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+// const store = new session.MemoryStore();
 const app = express();
-
 const saltRounds = 10;
-
-const jwt = require('jsonwebtoken');
+const { createToken, createRefreshToken, verifyJWT } = require('./JWT');
 
 app.use(
     cors({
         origin: 'http://localhost:3000',
         methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
+        credentials: true
     })
 );
 app.use(express.json({ limit: "5mb" }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-//Server is running
-app.get("/", (req, res) => {
-    res.send("Server is running");
-});
 
 //Listen on port 3000
 app.listen(3000, () => {
@@ -69,38 +63,17 @@ app.post("/register", (req, res) => {
 });
 
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    key: "userId",
-    secret: "TOPsecret",
+    key: "user",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
     },
 }));
-
-const verifyJWT = (req, res, next) => {
-    const token = req.headers["x-access-token"];
-
-    if (!token) {
-        return res.status(401).send("Access denied. No token provided");
-    }
-    else {
-        jwt.verify(token, "jwtSecret", (err, decoded) => {
-            if (err) {
-                res.json({ auth: false, message: "You failed to authenticate" });
-            }
-            else {
-                req.userId = decoded.id;
-                next();
-            }
-        });
-    }
-}
-
-app.get("/authenticate", verifyJWT, (req, res) => {
-    res.send({ auth: true });
-});
 
 app.post("/login", (req, res) => {
 
@@ -112,39 +85,45 @@ app.post("/login", (req, res) => {
 
         if (result.length > 0) {
             bcrypt.compare(pass, result[0].password, (err, response) => {
+
                 if (response) {
-                    const id = result[0].id;
-                    const username = result[0].username;
-
-                    const token = jwt.sign({ id, username }, "jwtSecret", {
-                        expiresIn: 300,
-                    });
-
-                    req.session.user = result;
-                    console.log(req.session.user);
-                    res.json({ status: true, token: token, result: result });
+                    const accessToken = createToken(result[0].user_id);
+                    const refreshToken = createRefreshToken(result[0].user_id);
+                    req.session.user = {
+                        data: result,
+                        token: accessToken,
+                        refresh: refreshToken
+                    };
+                    res.json({ status: true });
                 }
                 else {
                     res.send({ status: false, message:"Wrong username or password" });
                 }
-            })
+            });
         }
+
         else {
             res.send({ status: false, message:"Wrong username or password" });
         }
     });
 });
 
-app.get("/login", (req, res) => {
-    if (req.session.user) {
-        res.send({ loggedin: true, user: req.session.user });
+app.get("/getuserdata", verifyJWT, (req, res) => {
+    if (req.session.user.data) {
+        res.send({ loggedIn: true, user: req.session.user.data });
     }
-    else {
-        res.send({ loggedin: false });
+
+    else if (req.session.user.data === undefined || req.session.user.data === '') {
+        res.send({ loggedIn: false });
     }
 });
 
-// app.get("/logout", (req, res) => {
-//      = null;
-//     res.redirect('/');
-// });
+app.post("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return console.log(err);
+        }
+    });
+    res.clearCookie("user");
+    res.end();
+});

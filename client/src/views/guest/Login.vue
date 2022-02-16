@@ -66,7 +66,7 @@ Axios.defaults.withCredentials = true;
             },
             submitLogin() {
                 
-                if(this.checkForm()) {
+                if (this.checkForm()) {
                     Axios.post("http://localhost:3000/login", { username: this.username, pass: this.password })
                     .then((res) => {
                         
@@ -75,9 +75,8 @@ Axios.defaults.withCredentials = true;
                         }
 
                         else if (res.data.status) {
-                            console.log('good');
-                            localStorage.setItem("token", res.data.token);
-                            this.authenticateUser();
+                            this.$router.push({ name: 'UserInterface'});
+                            // this.authenticateUser();
                         }
                     });
 
@@ -87,23 +86,14 @@ Axios.defaults.withCredentials = true;
             },
 
             authenticateUser() {
-                Axios.get("http://localhost:3000/authenticate",{ 
-                    headers: {
-                        "x-access-token": localStorage.getItem("token"),
-                    }
-                })
+                Axios.get("http://localhost:3000/authenticate")
                 .then((response) => {
                     if (response.data.auth) {
-                        console.log("Authenticated");
                         this.$router.push({ name: 'UserInterface'});
                     }
-                });
-            },
-
-            getUserInfo() {
-                Axios.get("http://localhost:3000/login")
-                .then((response) => {
-                    console.log(response.data.user[0]);
+                    else if (!response.data.auth) {
+                        this.errorMessage = response.data.message;
+                    }
                 });
             },
         },

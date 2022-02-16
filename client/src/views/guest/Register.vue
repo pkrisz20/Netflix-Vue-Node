@@ -75,6 +75,16 @@ import Axios from "axios";
                     return false;
                 }
 
+                else if (this.username.length < 2) {
+                    this.errorMessage = 'The username has to be at least 2 characters!';
+                    return false;
+                }
+
+                else if (this.username.length > 14) {
+                    this.errorMessage = 'The username can not be longer than 14 characters!';
+                    return false;
+                }
+
                 else if (this.password.length < 6) {
                     this.errorMessage = 'Too weak password!';
                     return false;
