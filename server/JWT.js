@@ -5,9 +5,8 @@ const createToken = (userID) => {
     const accessToken = sign(
         { id: userID },
         process.env.ACCESS_TOKEN,
-        { expiresIn: 10 }
+        { expiresIn: 30 }
     );
-
     return accessToken;
 }
 
@@ -16,9 +15,8 @@ const createRefreshToken = (userID) => {
     const refreshToken = sign(
         { id: userID },
         process.env.REFRESH_TOKEN,
-        { expiresIn: 30 }
+        { expiresIn: 60 * 60 * 24 }
     );
-
     return refreshToken;
 }
 
@@ -31,6 +29,7 @@ const verifyJWT = (req, res, next) => {
         if (validToken) {
             console.log("Authenticated by accesstoken");
             next(); //if the token is valid then execute the request from user
+            return;
         }
         else {
             return res.status(403).send({ message: "Permission denied" });
@@ -54,6 +53,7 @@ const verifyJWT = (req, res, next) => {
                 if (validNewToken) {
                     console.log("Authenticated by the new accesstoken");
                     next(); //if the token is valid then execute the request from user
+                    return;
                 }
                 else {
                     return res.status(403).send({ message: "Permission denied" });
@@ -66,7 +66,8 @@ const verifyJWT = (req, res, next) => {
         catch (error) {     //It runs when the refresh token is expired
             console.log("Please sign in");
             res.clearCookie("user");
-            res.send({ loggedIn: false }); //the user needs to sign in
+            // console.log('res.status.403');
+            res.json({ loggedIn: false }); //the user needs to sign in
         }
     }
 }
