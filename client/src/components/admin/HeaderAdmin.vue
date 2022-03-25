@@ -13,7 +13,7 @@
                     <Dropdown
                         class="link submenu_user"
                         :title="'Categories'"
-                        :links="returnCategories"
+                        :links="$store.state.categories"
                         @getSelected="categoriesRoute($event)"
                     />
                     <router-link class="link" to="/favourites">My Favorites</router-link>
@@ -70,6 +70,15 @@
                     <path d="M28.228 23.986 47.092 5.122a2.998 2.998 0 0 0 0-4.242 2.998 2.998 0 0 0-4.242 0L23.986 19.744 5.121.88a2.998 2.998 0 0 0-4.242 0 2.998 2.998 0 0 0 0 4.242l18.865 18.864L.879 42.85a2.998 2.998 0 1 0 4.242 4.241l18.865-18.864L42.85 47.091c.586.586 1.354.879 2.121.879s1.535-.293 2.121-.879a2.998 2.998 0 0 0 0-4.242L28.228 23.986z"/></svg>
             </div>
             
+            <!-- UPLOAD ICON -->
+                <svg @click="openUploadForm" class="svg-upload" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384.97 384.97"
+                    style="enable-background:new 0 0 384.97 384.97" xml:space="preserve">
+                    <path d="M372.939 264.641c-6.641 0-12.03 5.39-12.03 12.03v84.212H24.061v-84.212c0-6.641-5.39-12.03-12.03-12.03S0 270.031 0 276.671v96.242c0 
+                    6.641 5.39 12.03 12.03 12.03h360.909c6.641 0 12.03-5.39 12.03-12.03v-96.242c.001-6.652-5.389-12.03-12.03-12.03z"/>
+                    <path d="m117.067 103.507 63.46-62.558v235.71c0 6.641 5.438 12.03 12.151 12.03s12.151-5.39 12.151-12.03V40.95l63.46
+                    62.558c4.74 4.704 12.439 4.704 17.179 0 4.74-4.704 4.752-12.319 0-17.011L201.268 3.5c-4.692-4.656-12.584-4.608-17.191 0L99.888 86.496a11.942 11.942 0 0 0 0 17.011c4.74 4.704 12.439 4.704 17.179 0z"/>
+                </svg>
+
             <!-- CHATS ICON -->
                 <svg class="svg-chats" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324.143 324.143"
                     style="enable-background:new 0 0 324.143 324.143" xml:space="preserve">
@@ -147,19 +156,7 @@
             </div>
 
             <div class="user-box-pic">
-                <img
-                    v-if="returnUserProfile == null"
-                    class="user-img"
-                    alt="user profile picture"
-                    src="../../assets/images/default_profile.jpg"
-                />
-
-                <img
-                    v-else-if="returnUserProfile != null"
-                    class="user-img"
-                    alt="user profile picture"
-                    :src="'data:image.*;base64,' + returnUserProfile"
-                />
+                <img class="user-img" alt="user profile picture" src="../../assets/images/default_profile.jpg">
 
                 <div class="user-options" v-show="isOpenOptions">
                     <div class="user-options-list">
@@ -171,7 +168,7 @@
                 </div>
             </div>
 
-            <h5 class="username" @click="openUserOptions">{{ returnUsername }}</h5>
+            <h5 class="username" @click="openUserOptions">{{ userName }}</h5>
         </div>
     </div>
     <transition name="fade" appear>
@@ -183,7 +180,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Dropdown from '../global/Dropdown.vue';
 import Axios from 'axios';
 Axios.defaults.withCredentials = true;
@@ -199,17 +195,11 @@ Axios.defaults.withCredentials = true;
                 IsOpenNotification: false,
                 isOpenOptions: false,
                 searchText: '',
+                userName: '',
                 openSidebar: false,
                 actualWidth: 0,
                 scrollPosition: null
             }
-        },
-        computed: {
-            ...mapState({
-                returnUsername: state => state.actualUserData.username,
-                returnUserProfile: state => state.actualUserData.image,
-                returnCategories: state => state.categories,
-            }),
         },
         // return the actual width of the window
         created() {
@@ -235,6 +225,10 @@ Axios.defaults.withCredentials = true;
             categoriesRoute(link) {
                 this.$router.push({ path: `/Moviesuser/${link}` });
                 console.log(link);
+            },
+
+            openUploadForm() {
+                this.$emit("openUploadForm");
             },
 
             openMenu() {
@@ -273,7 +267,7 @@ Axios.defaults.withCredentials = true;
             },
 
             logOut() {
-                this.$store.dispatch("logOut");
+                Axios.post("http://localhost:3000/logout");
                 this.$router.push({ name: 'Login'});
             },
 
@@ -308,9 +302,17 @@ Axios.defaults.withCredentials = true;
                 document.body.style.overflowY = 'scroll';
             });
 
-            //get movie categories from the store
-            this.$store.dispatch('getCategories');
-            this.$store.dispatch('getActualUserData');
+            // get user's data after sign in
+            Axios.get("http://localhost:3000/getuserdata")//HERE NEEDS A DISPATCH AND GET THE DATA FROM VUEX
+            .then((res) => {
+
+                if (res.data.loggedIn) {
+                    this.userName = res.data.user[0].username;
+                }
+                else if (!res.data.loggedIn) {
+                    this.$router.push({ name: 'Login'});
+                }
+            });
         },
     }
 </script>

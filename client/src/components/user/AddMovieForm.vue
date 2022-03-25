@@ -2,7 +2,7 @@
     <div class="modalUpload" v-if="showForm">
         <div class="modal_bg">
             <form @submit.prevent="submitForm" enctype="multipart/form-data">
-                <i @click="closeModal" class="fas fa-times close-icon"></i>
+                <i @click="openModal" class="fas fa-times close-icon"></i>
 
                 <label>Movie Name:</label>
                 <input type="text" v-model="movieName" name="movieName">
@@ -11,7 +11,7 @@
                 <textarea cols="40" rows="10" maxlength="75" v-model="movieReview" name="movieReview"></textarea>
                 <div class="text-length">{{ textLength }} / 75</div>
 
-                <input type="file" ref="file" class="file-input" accept="image/*" @change="handleUploadFile" id="moviePoster">
+                <input type="file" class="file-input" accept="image/*" @change="handleUploadFile" id="moviePoster">
                 <label class="file-label" for="moviePoster"><i class="fas fa-upload upload-icon"></i> Choose file</label>
                 
                 <button type="submit" class="submit-btn">INSERT</button>
@@ -59,11 +59,15 @@ import Axios from "axios";
             },
 
             openModal() {
-                this.showForm = true;
-            },
+                this.showForm = !this.showForm;
 
-            closeModal() {
-                this.showForm = false;
+                if (this.showForm) {
+                    document.body.style.overflowY = 'hidden';
+                }
+
+                if (!this.showForm) {
+                    document.body.style.overflowY = 'scroll';
+                }
             },
 
             submitForm() {
@@ -99,6 +103,7 @@ import Axios from "axios";
                 const modal = document.querySelector('.modal_bg');
                 if (event.target == modal) {
                     this.showForm = false;
+                    document.body.style.overflowY = 'scroll';
                 }
             });
         }

@@ -1,0 +1,619 @@
+<template>
+    <div class="profile">
+        <Header />
+        <div class="wrapper">
+            <div class="profile_page">
+
+                <BlockTitle :title="'Your Profile'" />
+                <div class="profile_page-picture">
+
+                    <img
+                        v-if="returnUserProfile === null"
+                        alt="profile-picture"
+                        class="profile_page-picture-img"
+                        src='../../assets/images/default_profile.jpg'
+                    />
+                    <img
+                        v-else-if="returnUserProfile != null"
+                        class="profile_page-picture-img"
+                        alt="user profile picture"
+                        :src="'data:image.*;base64,' + returnUserProfile"
+                    />
+
+                    <form class="changepicture">
+                        <input
+                            type="file"
+                            class="file-input"
+                            @change="handleUploadProfile"
+                            accept="image/*"
+                            id="profilePicture"
+                        />
+                        <label class="file-label" for="profilePicture"><i class="fas fa-upload upload-icon"></i> Change image</label>
+                    </form>
+
+                    <div class="success" v-if="returnSuccess">{{ returnSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
+                    <div class="error" v-if="returnError">{{ returnError }} <i @click="closeMessage" class="fas fa-times"></i></div>
+                </div>
+
+                <!-- EMAIL ROW -->
+                <div class="profile_page-datas" v-show="!emailForm">
+                    <div class="data">Your email: <span>{{ returnUserEmail }}</span> <i @click="openForm('email')" class="fas fa-edit edit"></i></div>
+                </div>
+
+                <div class="profile_page-form" v-show="emailForm">
+                    <div v-if="errorEmail" class="error">
+                        {{ errorEmail }}
+                    </div>
+
+                    <div v-if="successEmail" class="success">
+                        {{ successEmail }}
+                    </div>
+
+                    <form class="data" @submit.prevent="submitEmail">
+                        <label for="email">Your email:</label>
+                        <input ref="email" id="email" type="text" v-model="newEmail" placeholder="New email..."/>
+                        <input class="data-submit" type="submit" value="save"/>
+                        <i @click="closeForm('email')" class="far fa-times-circle close"></i>
+                    </form>
+                </div>
+
+                <!-- USERNAME ROW -->
+                <div class="profile_page-datas" v-show="!usernameForm">
+                    <div class="data">Your username: <span>{{ returnUsername }}</span> <i @click="openForm('username')" class="fas fa-edit edit"></i></div>
+                </div>
+
+                <div class="profile_page-form" v-show="usernameForm">
+                    <div v-if="errorUsername" class="error">
+                        {{ errorUsername }}
+                    </div>
+
+                    <div v-if="successUsername" class="success">
+                        {{ successUsername }}
+                    </div>
+
+                    <form class="data" @submit.prevent="submitUsername">
+                        <label for="username">Your username:</label>
+                        <input ref="username" id="username" type="text" v-model="newUsername" placeholder="New username..."/>
+                        <input class="data-submit" type="submit" value="save"/>
+                        <i @click="closeForm('username')" class="far fa-times-circle close"></i>
+                    </form>
+                </div>
+
+                <!-- PASSWORD ROW -->
+                <div class="profile_page-datas" v-show="!passwordForm">
+                    <div class="data">Your password:
+                    
+                    <div class="dots">
+                        <i v-for="(dot, i) in 10" :key="i" class="fas fa-circle"></i>
+                    </div>
+                    
+                    <i @click="openForm('password')" class="fas fa-edit edit"></i></div>
+                </div>
+
+                <div class="profile_page-form pass" v-show="passwordForm">
+                    <i @click="closeForm('password')" class="far fa-times-circle close"></i>
+
+                    <div v-if="errorPassword" class="error">
+                        {{ errorPassword }}
+                    </div>
+
+                    <div v-if="successPassword" class="success">
+                        {{ successPassword }}
+                    </div>
+                    
+                    <form class="data" @submit.prevent="submitPassword">
+                        <label for="oldpassword">Your old password:</label>
+                        <input ref="password" id="oldpassword" type="password" v-model="oldPassword" placeholder="Old password..."/>
+
+                        <label for="newpassword">Your new password:</label>
+                        <input id="newpassword" type="password" v-model="newPassword" placeholder="New password..."/>
+
+                        <label for="repeat">Repeat password:</label>
+                        <input id="repeat" type="password" v-model="repeatPassword" placeholder="New password again..."/>
+
+                        <input class="data-submit" type="submit" value="save"/>
+                    </form>
+                </div>
+
+                <BlockTitle :title="'Your List'" />
+                <MovieList />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import BlockTitle from "@/components/global/BlockTitle.vue";
+import Header from '@/components/user/HeaderUser.vue';
+import MovieList from '@/components/global/MovieList.vue';
+import Axios from "axios";
+import { mapState } from "vuex";
+
+export default {
+    name: "Profile",
+    components: {
+        Header,
+        MovieList,
+        BlockTitle
+    },
+    data() {
+        return {
+            emailForm: false,
+            usernameForm: false,
+            passwordForm: false,
+            errorEmail: '',
+            errorUsername: '',
+            errorPassword: '',
+            newEmail: '',
+            newUsername: '',
+            oldPassword: '',
+            newPassword: '',
+            repeatPassword: '',
+            newProfilePicture: null,
+            successEmail: '',
+            successUsername: '',
+            successPassword: '',
+        }
+    },
+
+    computed: {
+        ...mapState({
+            returnUsername: state => state.actualUserData.username,
+            returnUserEmail: state => state.actualUserData.email,
+            returnUserProfile: state => state.actualUserData.image,
+            returnError: state => state.errorMessage,
+            returnSuccess: state => state.successMessage,
+        }),
+    },
+
+    methods: {
+        //handle profile picture upload
+        handleUploadProfile (ev) {
+            const file = ev.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = e => {
+                this.newProfilePicture = e.target.result;
+                this.$store.dispatch("updateProfilePicture", this.newProfilePicture);
+            }
+        },
+        openForm(value) {
+            if (value == 'email') {
+                this.emailForm = true;
+                this.$nextTick(() => this.$refs.email.focus());
+            }
+
+            else if (value == 'username') {
+                this.usernameForm = true;
+                this.$nextTick(() => this.$refs.username.focus());
+            }
+
+            else if (value == 'password') {
+                this.passwordForm = true;
+                this.$nextTick(() => this.$refs.password.focus());
+            }
+        },
+
+        closeForm(value) {
+            if (value == 'email') {
+                this.emailForm = false;
+                this.newEmail = '';
+                this.errorEmail = '';
+                this.successEmail = '';
+            }
+
+            else if (value == 'username') {
+                this.usernameForm = false;
+                this.newUsername = '';
+                this.errorUsername = '';
+                this.successUsername = '';
+            }
+
+            else if (value == 'password') {
+                this.passwordForm = false;
+                this.newPassword = '';
+                this.errorPassword = '';
+                this.successPassword = '';
+            }
+        },
+
+        closeMessage() {
+            this.$store.commit("CANCEL_MESSAGES");
+        },
+
+        validEmail(emailData) {
+            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(emailData);
+        },
+
+        submitEmail() {
+            if (!this.newEmail) {
+                this.errorEmail = "Fill out the field!";
+                return;
+            }
+            else if (!this.validEmail(this.newEmail)) {
+                this.errorEmail = "Invalid email!";
+                return;
+            }
+
+            else {
+                Axios.put("http://localhost:3000/changemail", { newEmail: this.newEmail })
+                .then((res) => {
+                    
+                    if (res.data.status) {
+                        this.successEmail = res.data.message;
+                        this.errorEmail = "";
+                    }
+
+                    else if (!res.data.status) {
+                        this.errorEmail = res.data.message;
+                        this.successEmail = "";
+                    }
+                });
+            }
+        },
+
+        submitUsername() {
+            if (!this.newUsername) {
+                this.errorUsername = "Fill out the field!";
+                return;
+            }
+            else if (this.newUsername.length < 2) {
+                this.errorUsername = 'The username has to be at least 2 characters!';
+                return;
+            }
+
+            else if (this.newUsername.length > 14) {
+                this.errorUsername = 'Username max 14 characters!';
+                return;
+            }
+
+            else {
+                Axios.put("http://localhost:3000/changeusername", { newUsername: this.newUsername })
+                .then((res) => {
+                    
+                    if (res.data.status) {
+                        this.successUsername = res.data.message;
+                        this.errorUsername = "";
+                    }
+
+                    else if (!res.data.status) {
+                        this.errorUsername = res.data.message;
+                        this.successUsername = "";
+                    }
+                });
+            }
+        },
+
+        submitPassword() {
+            if (!this.oldPassword || !this.newPassword || !this.repeatPassword) {
+                this.errorPassword = "Fill out each field!";
+                return;
+            }
+
+            else if (this.newPassword != this.repeatPassword) {
+                this.errorPassword = "Passwords don't match!";
+                return;
+            }
+
+            else if (this.newPassword.length < 6) {
+                this.errorPassword = 'Too weak password!';
+                return;
+            }
+
+            else {
+                Axios.put("http://localhost:3000/changepassword",
+                {
+                    oldPassword: this.oldPassword,
+                    newPassword: this.newPassword,
+                    repeatPassword: this.repeatPassword
+                })
+                .then((res) => {
+                    
+                    if (res.data.status) {
+                        this.successPassword = res.data.message;
+                        this.errorPassword = "";
+                    }
+
+                    else if (!res.data.status) {
+                        this.errorPassword = res.data.message;
+                        this.successPassword = "";
+                    }
+                });
+            }
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+.profile {
+    background-color: $c-dark-blue;
+
+    .wrapper {
+
+        @media #{$r-max-laptop-m} {
+            width: calc(100% - 30px);   //I DONT EVEN KNOW WHERE THIS 30PX COMES FROM
+        }
+
+        .profile_page {
+            width: 100%;
+            height: auto;
+            @include flexCenter();
+            flex-direction: column;
+
+            .movies_section {
+                background-color: $c-dark-blue;
+            }
+
+            &-title {
+                color: $c-white;
+                margin: 30px 0;
+                font-size: 30px;
+                text-decoration: underline;
+                text-underline-offset: 5px;
+            }
+
+            &-picture {
+                width: 200px;
+                height: 200px;
+                position: relative;
+                margin-bottom: 50px;
+
+                .error {
+                    position: absolute;
+                    z-index: 5;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 8px 20px;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    color: $c-white;
+                    background: $c-error;
+                    @include flexCenter();
+
+                    i {
+                        font-size: 26px;
+                        cursor: pointer;
+                        transition: .3s;
+                        margin-left: 10px;
+                    }
+                }
+
+                .success {
+                    position: absolute;
+                    z-index: 5;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 8px 20px;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    color: $c-white;
+                    background: $c-success;
+                    @include flexCenter();
+
+                    i {
+                        font-size: 26px;
+                        cursor: pointer;
+                        transition: .3s;
+                        margin-left: 10px;
+                    }
+                }
+
+                &-img {
+                    @include object-fit();
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 100%;
+                }
+
+                .changepicture {
+                    position: absolute;
+                    bottom: -45px;
+                    left: 50%;
+                    transform: translateX(-50%);
+
+                    .file-input {
+                        display: none;
+                    }
+
+                    .file-label {
+                        background-color: $c-b;
+                        border-radius: 5px;
+                        color: $c-dark-blue;
+                        width: 120px;
+                        height: 40px;
+                        margin: 10px auto;
+                        font-size: 14px;
+                        padding: 5px 0;
+                        cursor: pointer;
+                        @include flexCenter();
+                        flex-direction: column;
+                        transition: .4s;
+
+                        &:hover {
+                            background-color: $c-green-theme;
+                            color: $c-white;
+                        }
+                    }
+                }
+            }
+
+            &-datas {
+                margin: 6px 0;
+                display: flex;
+                background-color: $c-d;
+                padding: 15px;
+                width: 500px;
+                height: auto;
+
+                .data {
+                    font-size: 16px;
+                    width: 100%;
+                    color: $c-3;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    .edit {
+                        cursor: pointer;
+                        font-size: 24px;
+                    }
+
+                    @media #{$r-max-mobile-l} {
+                        margin: 15px 0;
+                    }
+                    
+                    .dots {
+                        font-size: 6px;
+                        i {
+                            margin: 0 2px;
+                        }
+                    }
+                }
+            }
+
+            &-form {
+                margin: 6px 0;
+                display: flex;
+                flex-direction: column;
+                background-color: $c-d;
+                padding: 15px;
+                width: 500px;
+                height: auto;
+
+                &.pass {
+                    position: relative;
+
+                    .error, .success {
+                        margin-top: 20px;
+                    }
+
+                    .close {
+                        position: absolute;
+                        top: 10px;
+                        right: 15px;
+                        font-size: 26px;
+                        color: $c-dark-blue;
+                        cursor: pointer;
+                    }
+
+                    .data {
+                        flex-direction: column;
+
+                        label {
+                            margin-bottom: 10px;
+                        }
+
+                        input[type=password] {
+                            border: none;
+                            border-bottom: 1px solid $c-dark-blue;
+                            background: transparent;
+                            outline: none;
+                            padding: 5px;
+                            font-size: 14px;
+                            color: $c-3;
+                            margin-bottom: 15px;
+
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+                    }
+                }
+
+                .success {
+                    text-align: center;
+                    width: calc(100% - 16px);
+                    padding: 8px;
+                    border-radius: 3px;
+                    font-size: 15px;
+                    color: $c-white;
+                    background: $c-success;
+                    margin-bottom: 10px;
+
+                    i {
+                        font-size: 26px;
+                        cursor: pointer;
+                        transition: .3s;
+                        margin-left: 20px;
+                    }
+                }
+                .error {
+                    text-align: center;
+                    width: calc(100% - 16px);
+                    background-color: $c-red;
+                    color: $c-white;
+                    border-radius: 3px;
+                    padding: 8px;
+                    font-size: 15px;
+                    margin-bottom: 10px;
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
+                }
+
+                .data {
+                    font-size: 20px;
+                    width: 100%;
+                    color: $c-3;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    label {
+                        font-size: 16px;
+                        color: $c-3;
+                        font-weight: 600;
+                    }
+
+                    input[type=text] {
+                        border: none;
+                        border-bottom: 1px solid $c-dark-blue;
+                        background: transparent;
+                        outline: none;
+                        padding: 5px;
+                        font-size: 14px;
+                        color: $c-3;
+
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+
+                    i {
+                        font-size: 26px;
+                        color: $c-dark-blue;
+                        cursor: pointer;
+                    }
+
+                    &-submit {
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        outline: none;
+                        background-color: $c-b;
+                        border: 1px solid $c-dark-blue;
+                        color: $c-dark-blue;
+                        border-radius: 4px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        text-transform: uppercase;
+                        transition: .3s;
+
+                        &:hover {
+                            background-color: $c-green-theme;
+                            color: $c-white;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

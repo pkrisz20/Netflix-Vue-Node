@@ -1,22 +1,31 @@
 <template>
-    <div>
-        <HeaderUser @openUploadForm="openModal"/>
+    <div class="userinterface">
+        <HeaderUser />
         <HeroUser />
         <AddMovieForm ref="modalUploadForm"/>
-        <h1 class="carousel-title first">Top Series Now</h1>
+        
+        <BlockTitle class="first" :title="'Top Series Now'" />
         <MovieCarousel />
-        <h1 class="carousel-title">Trending Now</h1>
+
+        <BlockTitle class="left-side" :title="'Trending Now'" />
         <MovieCarousel />
-        <h1 class="carousel-title">New & Popular</h1>
+
+        <BlockTitle class="left-side" :title="'Top Movies Now'" />
         <MovieCarousel />
+
+        <BlockTitle class="left-side" :title="'New & Popular'" />
+        <MovieCarousel />
+        <!-- <Footer /> -->
     </div>
 </template>
 
 <script>
+import BlockTitle from "../../components/global/BlockTitle.vue";
 import HeaderUser from "../../components/user/HeaderUser.vue";
 import HeroUser from "../../components/user/HeroUser.vue";
 import AddMovieForm from "../../components/user/AddMovieForm.vue";
-import MovieCarousel from "../../components/MoviesCarousel.vue";
+import MovieCarousel from "../../components/user/MoviesCarousel.vue";
+// import Footer from "@/components/global/Footer.vue";
 
     export default {
         name: "LoggedInUser",
@@ -24,23 +33,53 @@ import MovieCarousel from "../../components/MoviesCarousel.vue";
             HeaderUser,
             HeroUser,
             AddMovieForm,
-            MovieCarousel
+            MovieCarousel,
+            BlockTitle,
+            // Footer
         },
-        methods: {
-            openModal() {
-                this.$refs.modalUploadForm.openModal();
-            }
-        },
+        // methods: {
+        //     handleBackButton() {
+        //         window.onpopstate = function() {
+        //             alert('browser-back');
+        //         };
+        //     }
+        // },
+        // mounted() {
+        //     // if back button is pressed
+        //     window.onpopstate = function(event) {
+        //         window.reload();
+        //         console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
+        //     };
+        // }
+        // beforeDestroy () {
+        //     document.removeEventListener("backbutton", this.handleBackButton);
+        // }
     }
 </script>
 
 <style lang="scss" scoped>
-.carousel-title {
-    color: $c-e;
-    margin: 50px 15px 10px;
+.userinterface {
+    background-color: $c-dark-theme;
+    position: relative;
+    z-index: 6;
 
-    &.first {
-        margin: -60px 15px 10px;
+    .first {
+        justify-content: flex-start;
+        padding: 0 15px 0;
+        margin: -160px 0 40px;
+
+        @media #{$r-max-tablet} {
+            justify-content: center;
+        }
+    }
+
+    .left-side {
+        padding: 50px 15px 0;
+        justify-content: flex-start;
+
+        @media #{$r-max-tablet} {
+            justify-content: center;
+        }
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="login">
     <Header />
     <div class="container">
         <img alt="login image" class="login-image" src="../../assets/images/movie-poster.jpg">
@@ -27,21 +27,24 @@
                 </div>
             </form>
 
-            <span class="login-below">Don't have an account? <a href="register" class="link">Sign Up</a></span>
+            <span class="login-below">Don't have an account? <router-link class="link" to="/register">Sign Up</router-link></span>
         </div>
     </div>
+    <Footer />
 </div>
 </template>
 
 <script>
-import Header from '../../components/Header.vue';
+import Header from '@/components/guest/Header.vue';
+import Footer from '@/components/global/Footer.vue';
 import Axios from "axios";
 Axios.defaults.withCredentials = true;
 
     export default {
         name: "Login",
         components: {
-            Header
+            Header,
+            Footer
         },
         data() {
             return {
@@ -53,7 +56,6 @@ Axios.defaults.withCredentials = true;
         methods: {
 
             checkForm() {
-
                 if (!this.username || !this.password) {
                     this.errorMessage = 'Each field is required!';
                     return false;
@@ -76,31 +78,22 @@ Axios.defaults.withCredentials = true;
 
                         else if (res.data.status) {
                             this.$router.push({ name: 'UserInterface'});
-                            // this.authenticateUser();
                         }
                     });
-
                     this.username = '';
                     this.password = '';
                 }
-            },
-
-            authenticateUser() {
-                Axios.get("http://localhost:3000/authenticate")
-                .then((response) => {
-                    if (response.data.auth) {
-                        this.$router.push({ name: 'UserInterface'});
-                    }
-                    else if (!response.data.auth) {
-                        this.errorMessage = response.data.message;
-                    }
-                });
             },
         },
     }
 </script>
 
 <style lang="scss" scoped>
+    .login {
+        position: relative;
+        z-index: 0;
+    }
+
     .container {
         width: 100%;
         height: 100vh;
@@ -119,8 +112,7 @@ Axios.defaults.withCredentials = true;
         .login-image {
             width: 100%;
             height: 100vh;
-            object-fit: cover;
-            object-position: center;
+            @include object-fit();
         }
 
         .login {
@@ -130,24 +122,35 @@ Axios.defaults.withCredentials = true;
             transform: translate(-50%, -50%);
             background-color: rgba($c-black, 0.8);
             border-radius: 5px;
-            padding: 65px;
-            display: flex;
+            padding: 50px;
+            @include flexCenter();
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+
+            @media #{$r-max-tablet} {
+                padding: 35px;
+            }
+
+            @media #{$r-max-mobile-s} {
+                width: 100%;
+                height: auto;
+                padding: 20px 0;
+            }
 
             &-title {
                 font-size: 30px;
                 color: $c-white;
                 width: 100%;
                 margin: 0 0 15px;
+
+                @media #{$r-max-tablet} {
+                    font-size: 24px;
+                    width: 300px;
+                }
             }
 
             &-form {
-                display: flex;
+                @include flexCenter();
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
                 width: 300px;
 
                 .error {
@@ -157,6 +160,10 @@ Axios.defaults.withCredentials = true;
                     border-radius: 3px;
                     padding: 8px;
                     font-size: 15px;
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
                 }
 
                 &-input {
@@ -174,6 +181,15 @@ Axios.defaults.withCredentials = true;
                     &::placeholder {
                         color: $c-9;
                     }
+
+                    @media #{$r-max-tablet} {
+                        height: 26px;
+                        font-size: 16px;
+                    }
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
                 }
 
                 .forgot-pass {
@@ -184,6 +200,10 @@ Axios.defaults.withCredentials = true;
                         transition: .3s;
                         color: $c-green-theme;
                         text-decoration: none;
+
+                        @media #{$r-max-mobile-s} {
+                            font-size: 12px;
+                        }
 
                         &:hover {
                             color: $c-white;
@@ -202,6 +222,12 @@ Axios.defaults.withCredentials = true;
                     margin: 25px 0 15px;
                     cursor: pointer;
                     transition: .3s;
+
+                    @media #{$r-max-tablet} {
+                        padding: 10px 0;
+                        font-size: 16px;
+                        margin: 10px 0 5px;
+                    }
                 }
 
                 
@@ -215,14 +241,22 @@ Axios.defaults.withCredentials = true;
                     label {
                         font-size: 16px;
                         color: $c-a;
+
+                        @media #{$r-max-mobile-s} {
+                            font-size: 12px;
+                        }
                     }
                 }
             }
 
             &-below {
-                width: 100%;
+                width: 300px;
                 font-size: 14px;
                 color: $c-a;
+
+                @media #{$r-max-mobile-s} {
+                    font-size: 12px;
+                }
 
                 .link {
                     transition: .3s;

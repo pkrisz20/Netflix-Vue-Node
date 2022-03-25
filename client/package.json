@@ -16,7 +16,8 @@
     "vue-agile": "^2.0.0",
     "vue-axios": "^3.4.0",
     "vue-carousel": "^0.18.0",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

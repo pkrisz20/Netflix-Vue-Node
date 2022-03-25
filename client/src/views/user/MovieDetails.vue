@@ -1,46 +1,36 @@
 <template>
 <div>
-    <Header />
+    <HeaderUser @openUploadForm="openModal"/>
+    <AddMovieForm ref="modalUploadForm"/>
     <div class="bg-linear">
         <div class="container">
             <img class="cover-image" alt="background" src="../../assets/images/peaky.jpg">
 
             <div class="movie-details">
-                <h1 class="movie-title">Peaky Blinders</h1>
+                <h1 class="movie-title">{{ movieTitle }}</h1>
                 <div class="movie-info-box">
 
-                    <div class="info"><svg xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488.898 488.898" style="enable-background:new 0 0 488.898 488.898"
-                    xml:space="preserve"><path d="M487.247 218.699c-17.9-168.2-171.6-228.2-269.4-217.5-72.9 8-137.3 47.9-177.9 109.2-6.2 9.4-4.2 21.8 5.2 28.1s21.8 3.1 28.1-6.2c34.3-51 88.4-84.3 148.8-90.5 103.6-10.7 203.6 52.4 224.7 181 15.5 94.4-58.6 212.6-181 224.7-74.6 7.4-147.3-25.9-189.4-86.5l38.5 8.5c10.4 2.1 21.8-4.2 23.9-15.6 2.1-10.4-4.2-21.8-15.6-23.9l-81.1-17.7c-5.2-1-22-.4-25 15.6l-16.6 82.2c-2.1 10.4 4.2 21.8 15.6 23.9 13 1.1 21.8-6.2 23.9-16.6l6.2-28.2c79.5 111.3 215.3 99.8 223.7 99 130.2-12.8 233.2-122.1 217.4-269.5z"/><path d="M260.447 129.199c-11.4 0-20.8 9.4-20.8 20.8v94.7c0 5.2 2.1 10.4 6.2 14.6l94.7 94.7c12.2 11.6 25 4.2 30.2 1 8.3-8.3 8.3-20.8 0-29.1l-89.5-89.5v-86.3c.1-11.5-9.3-20.9-20.8-20.9z"/>
-                    </svg>Duration: 1H 55M</div>
+                    <div class="info"><i class="far fa-hourglass-half"></i> Duration: {{ movieDuration }}</div>
 
-                    <div class="info">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" 
-                    xml:space="preserve"><path d="M469.163 323.902c-5.633 0-10.199 4.567-10.199 10.199v117.291c0 5.633 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V334.101c.001-5.632-4.566-10.199-10.199-10.199zM469.163 283.105c-5.633 0-10.199 4.567-10.199 10.199v7.139c0 5.633 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199v-7.139c.001-5.631-4.566-10.199-10.199-10.199z"/><path d="M501.801 57.625h-42.837V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617h-42.837V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617h-45.896V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617H266.2V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617h-42.837V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617h-45.896V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617H73.434V26.008c0-5.632-4.566-10.199-10.199-10.199s-10.199 4.567-10.199 10.199v31.617H10.199C4.566 57.625 0 62.193 0 67.825v418.167c0 5.632 4.566 10.199 10.199 10.199h491.602c5.633 0 10.199-4.567 10.199-10.199V67.825c0-5.632-4.566-10.2-10.199-10.2zm-10.199 418.168H20.398V152.556h471.203v323.237zm0-343.636H20.398V78.024h32.637v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h42.837v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h45.896v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h42.837v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h42.837v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h45.896v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h42.837v22.438c0 5.632 4.566 10.199 10.199 10.199s10.199-4.567 10.199-10.199V78.024h32.637v54.133z"/><path d="M433.466 200.492H78.534c-5.633 0-10.199 4.567-10.199 10.199v206.966c0 5.632 4.566 10.199 10.199 10.199h354.932c5.633 0 10.199-4.567 10.199-10.199V210.691c0-5.632-4.566-10.199-10.199-10.199zM186.645 407.458H88.733v-48.407h97.912v48.407zm0-68.806H88.733v-48.956h97.912v48.956zm0-69.354H88.733V220.89h97.912v48.408zm118.311 138.16h-97.912v-48.407h97.912v48.407zm0-68.806h-97.912v-48.956h97.912v48.956zm0-69.354h-97.912V220.89h97.912v48.408zm118.311 138.16h-97.912v-48.407h97.912v48.407zm0-68.806h-97.912v-48.956h97.912v48.956zm0-69.354h-97.912V220.89h97.912v48.408z"/>
-                    </svg>Year: 2016</div>
+                    <div class="info"><i class="far fa-calendar-star"></i> Release: {{ releaseDate }}</div>
 
-                    <div class="info"><svg xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 503.596 503.596" style="enable-background:new 0 0 503.596 503.596" 
-                    xml:space="preserve"><path d="M503.592 84.774c0-10.968-8.892-19.86-19.852-19.86H19.86C8.892 64.914 0 73.806 0 84.774v334.048c0 10.968 8.892 19.86 19.86 19.86h463.884c10.96 0 19.852-8.892 19.852-19.86V84.774h-.004zm-243.924 11.62a3.933 3.933 0 0 1 3.936-3.936h31.476a3.931 3.931 0 0 1 3.928 3.936v31.476a3.92 3.92 0 0 1-3.928 3.928h-31.476a3.924 3.924 0 0 1-3.936-3.928V96.394zm-55.08 0a3.938 3.938 0 0 1 3.936-3.936h31.472a3.935 3.935 0 0 1 3.932 3.936v31.476c0 2.18-1.76 3.928-3.932 3.928h-31.472a3.929 3.929 0 0 1-3.936-3.928V96.394zm-125.9 310.812a3.926 3.926 0 0 1-3.936 3.928H43.284a3.931 3.931 0 0 1-3.936-3.928V375.73a3.938 3.938 0 0 1 3.936-3.936h31.468a3.933 3.933 0 0 1 3.936 3.936v31.476zm0-279.336a3.921 3.921 0 0 1-3.936 3.928H43.284a3.929 3.929 0 0 1-3.936-3.928V96.394a3.938 3.938 0 0 1 3.936-3.936h31.468a3.933 3.933 0 0 1 3.936 3.936v31.476zm55.084 279.336a3.931 3.931 0 0 1-3.936 3.928H98.36a3.925 3.925 0 0 1-3.928-3.928V375.73a3.931 3.931 0 0 1 3.928-3.936h31.476a3.938 3.938 0 0 1 3.936 3.936v31.476zm0-279.336a3.926 3.926 0 0 1-3.936 3.928H98.36a3.922 3.922 0 0 1-3.928-3.928V96.394a3.931 3.931 0 0 1 3.928-3.936h31.476a3.938 3.938 0 0 1 3.936 3.936v31.476zm55.08 279.336a3.931 3.931 0 0 1-3.936 3.928h-31.472a3.926 3.926 0 0 1-3.932-3.928V375.73a3.932 3.932 0 0 1 3.932-3.936h31.472a3.938 3.938 0 0 1 3.936 3.936v31.476zm0-279.336a3.926 3.926 0 0 1-3.936 3.928h-31.472a3.923 3.923 0 0 1-3.932-3.928V96.394a3.932 3.932 0 0 1 3.932-3.936h31.472a3.938 3.938 0 0 1 3.936 3.936v31.476zm7.864 188.468v-135.96c0-11.624 5.964-19.116 15.08-19.116 4.064 0 8.4 1.516 12.796 4.516l95.164 64.652c6.852 4.664 10.632 11.032 10.632 17.936 0 6.892-3.764 13.256-10.616 17.916l-95.14 64.672c-4.404 2.992-8.776 4.508-12.84 4.508-9.112 0-15.076-7.5-15.076-19.124zm47.212 90.868a3.928 3.928 0 0 1-3.932 3.928h-31.472a3.931 3.931 0 0 1-3.936-3.928V375.73a3.938 3.938 0 0 1 3.936-3.936h31.472a3.935 3.935 0 0 1 3.932 3.936v31.476zm55.08 0a3.925 3.925 0 0 1-3.928 3.928h-31.476a3.926 3.926 0 0 1-3.936-3.928V375.73a3.933 3.933 0 0 1 3.936-3.936h31.476a3.931 3.931 0 0 1 3.928 3.936v31.476zm55.076 0a3.922 3.922 0 0 1-3.928 3.928H318.68a3.925 3.925 0 0 1-3.928-3.928V375.73a3.931 3.931 0 0 1 3.928-3.936h31.476a3.926 3.926 0 0 1 3.928 3.936v31.476zm0-279.336a3.917 3.917 0 0 1-3.928 3.928H318.68a3.922 3.922 0 0 1-3.928-3.928V96.394a3.931 3.931 0 0 1 3.928-3.936h31.476a3.926 3.926 0 0 1 3.928 3.936v31.476zm51.152 283.264h-31.48a3.93 3.93 0 0 1-3.928-3.928V375.73a3.937 3.937 0 0 1 3.928-3.936h31.476a3.933 3.933 0 0 1 3.936 3.936v31.476h.004a3.926 3.926 0 0 1-3.936 3.928zm0-279.336h-31.48a3.927 3.927 0 0 1-3.928-3.928V96.394a3.937 3.937 0 0 1 3.928-3.936h31.476a3.933 3.933 0 0 1 3.936 3.936v31.476h.004a3.921 3.921 0 0 1-3.936 3.928zm59.012 275.408a3.926 3.926 0 0 1-3.936 3.928h-31.468a3.931 3.931 0 0 1-3.936-3.928V375.73a3.938 3.938 0 0 1 3.936-3.936h31.468a3.933 3.933 0 0 1 3.936 3.936v31.476zm0-279.336a3.921 3.921 0 0 1-3.936 3.928h-31.468a3.929 3.929 0 0 1-3.936-3.928V96.394a3.938 3.938 0 0 1 3.936-3.936h31.468a3.933 3.933 0 0 1 3.936 3.936v31.476z"/>
-                    </svg>Type: Series</div>
+                    <div class="info"><i class="fas fa-film-alt"></i> Category: {{ movieType }}</div>
                 </div>
 
-                <p class="movie-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint, exercitationem? Corrupti, possimus inventore! Atque nisi dolor explicabo nesciunt iusto omnis commodi quos, voluptate repellat quidem nostrum accusantium ex, corporis laudantium sunt fugit culpa beatae deleniti voluptatibus eaque libero molestiae! Vel fugit, officia eaque ullam sunt exercitationem magnam tempora mollitia voluptatum.</p>
+                <p class="movie-desc">{{ movieDescription }}</p>
+
                 <div class="btns">
                     <button class="btn watch"><i class="fas fa-play"></i> WATCH</button>
                     <button class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
-                    <button class="btn-favourite"><i class="fas fa-heart"></i></button>
-                    <button class="btn_likes like">
+                    <button class="btns-favourite"><i class="fas fa-heart"></i></button>
+                    <button class="btns_likes like">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 489.543 489.543" xml:space="preserve"><path d="M270.024 0c-22.6 0-15 48.3-15 48.3s-48.3 133.2-94.5 168.7c-9.9 10.4-16.1 21.9-20 31.3-.9 2.3-1.7 4.5-2.4 6.5-3.1 6.3-9.7 16-23.8 24.5l46.2 200.9s71.5 9.3 143.2 7.8c28.7 2.3 59.1 2.5 83.3-2.7 82.2-17.5 61.6-74.8 61.6-74.8 44.3-33.3 19.1-74.9 19.1-74.9 39.4-41.1.7-75.6.7-75.6s21.3-33.2-6.2-58.3c-34.3-31.4-127.4-10.5-127.4-10.5-6.5 1.1-13.4 2.5-20.8 4.3 0 0-32.2 15 0-82.7 32.3-97.7-21.4-112.8-44-112.8zM127.324 465.7l-35-166.3c-2-9.5-11.6-17.3-21.3-17.3h-66.8l-.1 200.8h109.1c9.8.1 16.1-7.7 14.1-17.2z"/></svg>
+                        Like
                     </button>
-                    <button class="btn_likes dislike">
+                    <button class="btns_likes dislike">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xml:space="preserve"><path d="M117.333 10.667h-64C23.936 10.667 0 34.603 0 64v170.667C0 264.064 23.936 288 53.333 288H160c5.888 0 10.667-4.779 10.667-10.667V64c0-29.397-23.936-53.333-53.334-53.333zM512 208c0-18.496-10.603-34.731-26.347-42.667 3.285-6.549 5.013-13.781 5.013-21.333 0-18.496-10.603-34.752-26.368-42.688 4.864-9.728 6.293-20.928 3.84-32.043C463.36 47.68 443.051 32 419.819 32H224c-7.232 0-16.405 1.173-25.771 3.285-5.739 1.301-9.344 6.976-8.064 12.693C191.403 53.632 192 58.859 192 64v213.333c0 5.739-1.6 11.264-4.736 16.448a10.623 10.623 0 0 0-.555 9.984l47.957 103.893v72.32a10.75 10.75 0 0 0 3.989 8.341c.683.555 16.512 13.013 38.677 13.013 24.683 0 64-39.061 64-85.333 0-29.184-10.453-65.515-16.96-85.333h131.755c28.715 0 53.141-21.248 55.637-48.341 1.387-15.189-3.669-29.824-13.632-40.725C506.901 232.768 512 220.821 512 208z"/></svg>
+                        Dislike
                     </button>
-                </div>
-
-                <div class="btn_likes">
-
                 </div>
             </div>
         </div>
@@ -50,15 +40,31 @@
 </template>
 
 <script>
-import Header from '../../components/Header.vue';
-import Comments from "../../components/Comments.vue";
+import HeaderUser from "../../components/user/HeaderUser.vue";
+import Comments from "../../components/user/Comments.vue";
+import AddMovieForm from "../../components/user/AddMovieForm.vue";
 
     export default {
         name: "Moviedetails",
         components: {
             Comments,
-            Header
-        }
+            HeaderUser,
+            AddMovieForm
+        },
+        data() {
+            return {
+                movieTitle: 'Peaky Blinders',
+                movieDuration: '5 Season',
+                releaseDate: 2016,
+                movieType: 'Series',
+                movieDescription: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint, exercitationem? Corrupti, possimus inventore! Atque nisi dolor explicabo nesciunt iusto omnis commodi quos, voluptate repellat quidem nostrum accusantium ex, corporis laudantium sunt fugit culpa beatae deleniti voluptatibus eaque libero molestiae! Vel fugit, officia eaque ullam sunt exercitationem magnam tempora mollitia voluptatum.',
+            }
+        },
+        methods: {
+            openModal() {
+                this.$refs.modalUploadForm.openModal();
+            }
+        },
     }
 </script>
 
@@ -84,11 +90,14 @@ import Comments from "../../components/Comments.vue";
         height: 100vh;
         position: relative;
 
+        @media #{$r-max-tablet} {
+            min-height: 100%;
+        }
+
         .cover-image {
             width: 100%;
             height: 100vh;
-            object-fit: cover;
-            object-position: center;
+            @include object-fit();
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
         }
 
@@ -96,17 +105,41 @@ import Comments from "../../components/Comments.vue";
             width: 1170px;
             padding: 0 15px;
             margin: 0 auto;
-            position: absolute;
-            z-index: 4;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            @include absoluteCenter();
+            z-index: 6;
+
+            @media #{$r-max-laptop-m} {
+                width: calc(100% - 30px);
+                padding-top: 50px;
+            }
+
+            @media #{$r-max-tablet} {
+                padding-top: 70px;
+            }
+
+            @media #{$r-max-mobile-s} {
+                padding-top: 160px;
+            }
 
             .movie {
                 &-title {
                     color: $c-white;
                     font-size: 40px;
                     letter-spacing: 4px;
+
+                    @media #{$r-max-laptop-s} {
+                        text-align: center;
+                    }
+
+                    @media #{$r-max-mobile-l} {
+                        font-size: 32px;
+                    }
+
+                    @media #{$r-max-mobile-s} {
+                        letter-spacing: 2px;
+                        font-size: 26px;
+                        margin: 5px 0;
+                    }
                 }
 
                 &-info-box {
@@ -115,10 +148,32 @@ import Comments from "../../components/Comments.vue";
                     display: flex;
                     align-items: center;
 
+                    @media #{$r-max-tablet} {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+
                     .info {
                         margin: 0 30px;
                         font-weight: 700;
                         font-size: 24px;
+
+                        @media #{$r-max-laptop-s} {
+                            margin: 0 25px;
+                        }
+
+                        @media #{$r-max-tablet} {
+                            margin: 10px 0;
+                        }
+
+                        @media #{$r-max-mobile-l} {
+                            font-size: 20px;
+                        }
+
+                        @media #{$r-max-mobile-s} {
+                            font-size: 18px;
+                            margin: 5px 0;
+                        }
 
                         svg {
                             width: 40px;
@@ -134,6 +189,14 @@ import Comments from "../../components/Comments.vue";
                     color: $c-white;
                     font-size: 18px;
                     text-align: justify;
+
+                    @media #{$r-max-tablet} {
+                        margin: 5px 0;
+                    }
+
+                    @media #{$r-max-mobile-l} {
+                        font-size: 15px;
+                    }
                 }
             }
 
@@ -141,6 +204,21 @@ import Comments from "../../components/Comments.vue";
                 margin-left: 40px;
                 display: flex;
                 align-items: center;
+
+                @media #{$r-max-laptop-s} {
+                    margin-left: 0;
+                }
+
+                @media #{$r-max-tablet} {
+                    display: grid;
+                    grid-template-columns: repeat(3, auto);
+                    row-gap: 10px;
+                }
+
+                @media #{$r-max-mobile-s} {
+                    display: flex;
+                    flex-direction: column;
+                }
 
                 .btn {
                     padding: 16px 24px;
@@ -151,6 +229,11 @@ import Comments from "../../components/Comments.vue";
                     border: none;
                     cursor: pointer;
                     transition: .3s;
+
+                    @media #{$r-max-laptop-s} {
+                        margin: 0 10px;
+                        font-size: 15px;
+                    }
 
                     &.watch {
                         background: $c-green-theme;
@@ -169,7 +252,8 @@ import Comments from "../../components/Comments.vue";
                         }
                     }
                 }
-                .btn-favourite {
+
+                &-favourite {
                     border: none;
                     cursor: pointer;
                     transition: all .3s;
@@ -178,40 +262,57 @@ import Comments from "../../components/Comments.vue";
                     background: none;
                     color: $c-white;
 
+                    @media #{$r-max-laptop-s} {
+                        margin: 0 10px;
+                        font-size: 28px;
+                    }
+
                     &:hover {
                         color: $c-red;
                         transform: scale(1.2);
                     }
                 }
 
-                .btn_likes {
-                    background: transparent;
+                &_likes {
+                    display: flex;
+                    align-items: center;
+                    color: $c-white;
+                    font-size: 24px;
+                    font-family: $c-main-font;
                     border: none;
+                    background-color: transparent;
                     margin: 0 15px;
                     cursor: pointer;
+                    padding: 10px 20px;
+                    border-radius: 3px;
+                    transition: all .3s ease-in-out;
 
-                    svg {
-                        width: 40px;
-                        height: 40px;
-                        fill: $c-white;
-                        transition: all .3s;
+                    @media #{$r-max-laptop-s} {
+                        margin: 0 10px;
+                        font-size: 18px;
                     }
 
-                    &.like {
-                        &:hover {
-                            svg {
-                                transform: scale(1.2);
-                                fill: $c-green-theme;
-                            }
+                    svg {
+                        width: 26px;
+                        height: 26px;
+                        fill: $c-white;
+                        margin-right: 5px;
+
+                        @media #{$r-max-laptop-s} {
+                            width: 22px;
+                            height: 22px;
                         }
                     }
 
-                    &.dislike {
-                        &:hover {
-                            svg {
-                                transform: scale(1.2);
-                                fill: $c-error;
-                            }
+                    &:hover {
+                        transform: scale(1.1);
+
+                        &.like {
+                            background-color: $c-blue;
+                        }
+
+                        &.dislike {
+                            background-color: $c-error;
                         }
                     }
                 }

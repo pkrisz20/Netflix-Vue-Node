@@ -1,0 +1,82 @@
+Home:
+    ✔ Responsive all component @done(22-02-27 17:46)
+    ☐ Backend to hero carousel
+    ☐ Backend to product cards (select all)
+    ☐ Load more button
+    ✔ Scrollup button @done(22-03-04 14:33)
+
+Author:
+    ✔ Responsive all component @done(22-02-27 17:46)
+    ✔ Static content @done(22-02-27 17:46)
+    ✔ Tabs @done(22-02-27 17:49)
+
+Categories:
+    ✔ Responsive dropdown @done(22-02-27 17:47)
+    ✔ Sticky @done(22-02-27 17:47)
+    ✔ Returns the clicked category from menu @done(22-02-27 17:48)
+
+Register:
+    ✔ Responsive @done(22-02-27 17:48)
+    ✔ Backend to the registration @done(22-02-27 17:48)
+    ✔ Form validation @done(22-02-27 17:48)
+
+Login:
+    ✔ Responvive @done(22-02-27 17:49)
+    ✔ Form validation @done(22-02-27 17:49)
+    ✔ JWT Authentication, cookies, session @done(22-02-27 17:50)
+
+User interface:
+    Home:
+        ✔ Header responsive @started(22-03-01 20:03) @done(22-03-04 00:35) @lasted(2d4h32m58s)
+        ✔ v-if render the search boxes and notification panels by width of the window @done(22-03-04 00:36)
+        ✔ Hero responsive @done(22-03-04 17:30)
+        ✔ Carousels responsive @done(22-02-27 17:55)
+        ☐ Backend to the slider with TOP SERIES
+        ☐ Backend to the slider with NEW & POPULAR
+        ☐ Backend to the slider with TOP MOVIES
+        ☐ Backend to the hero carousel
+        ✔ Scrollup button @done(22-03-04 14:32)
+        ✔ Log out @done(22-02-27 18:02)
+    
+    Favourites:
+        ✔ Responsive @done(22-02-27 17:56)
+        ☐ Backend to the actual user's favourite movies
+
+    Notifications:
+        ✔ Responsive @done(22-03-04 00:36)
+        ☐ Backend to the notifications which belong to the actual user
+        ☐ Already seen notifications
+
+    Upload:
+        ☐ Responsive
+        ☐ New upload form
+        ☐ Validation
+    
+    Profile:
+        ✔ Responsive @done(22-03-05 14:38)
+        ✔ Backend to the profile picture change @done(22-03-25 18:52)
+        ✔ Backend to the user's data change @done(22-03-25 18:52)
+
+    Search:
+        ✔ Responsive @done(22-03-05 19:13)
+        ✔ Sitebuild for the filter @done(22-03-05 18:36)
+        ☐ Search by name (backend)
+        ☐ Search by categories (backend)
+
+    Movie details:
+        ✔ Sitebuild @done(22-03-03 23:05)
+        ✔ Responsive (user side done) @done(22-03-25 18:52)
+        ☐ Like backend
+        ☐ Add to favourites
+        ✔ Comments section reponsive @done(22-03-10 23:48)
+        ☐ Comments backend
+
+    Footer:
+        ✔ Sitebuild @done(22-03-25 18:52)
+        ✔ Responsive @done(22-03-25 18:52)
+
+Admin interface:
+    Users:
+        ☐ Sitebuild for users list
+        ☐ Responsive
+        ☐ Backend to bann a user

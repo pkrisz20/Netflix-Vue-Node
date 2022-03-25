@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="register">
     <Header />
     <div class="container">
         <img alt="register image" class="register-image" src="../../assets/images/movie-poster.jpg">
@@ -31,20 +31,23 @@
                 </div>
             </form>
 
-            <span class="register-below">Already have an account? <a href="login" class="link">Sign In</a></span>
+            <span class="register-below">Already have an account? <router-link to="/login" class="link">Sign In</router-link></span>
         </div>
     </div>
+    <Footer />
 </div>
 </template>
 
 <script>
-import Header from '../../components/Header.vue';
+import Header from '@/components/guest/Header.vue';
+import Footer from "@/components/global/Footer.vue";
 import Axios from "axios";
 
     export default {
         name: "Register",
         components: {
-            Header
+            Header,
+            Footer
         },
         data() {
             return {
@@ -130,6 +133,11 @@ import Axios from "axios";
 </script>
 
 <style lang="scss" scoped>
+    .register {
+        position: relative;
+        z-index: 0;
+    }
+
     .container {
         width: 100%;
         height: 100vh;
@@ -148,8 +156,7 @@ import Axios from "axios";
         .register-image {
             width: 100%;
             height: 100vh;
-            object-fit: cover;
-            object-position: center;
+            @include object-fit();
         }
 
         .register {
@@ -159,24 +166,35 @@ import Axios from "axios";
             transform: translate(-50%, -50%);
             background-color: rgba($c-black, 0.8);
             border-radius: 5px;
-            padding: 65px;
-            display: flex;
+            padding: 50px;
+            @include flexCenter();
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+
+            @media #{$r-max-tablet} {
+                padding: 35px;
+            }
+
+            @media #{$r-max-mobile-s} {
+                width: 100%;
+                height: auto;
+                padding: 20px 0;
+            }
 
             &-title {
                 font-size: 30px;
                 color: $c-white;
                 width: 100%;
                 margin: 0 0 15px;
+
+                @media #{$r-max-tablet} {
+                    font-size: 24px;
+                    width: 300px;
+                }
             }
 
             &-form {
-                display: flex;
+                @include flexCenter();
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
                 width: 300px;
 
                 .error {
@@ -186,6 +204,10 @@ import Axios from "axios";
                     border-radius: 3px;
                     padding: 8px;
                     font-size: 15px;
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
                 }
 
                 .success {
@@ -195,6 +217,10 @@ import Axios from "axios";
                     border-radius: 3px;
                     padding: 8px;
                     font-size: 15px;
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
                 }
 
                 .password_weak {
@@ -237,6 +263,15 @@ import Axios from "axios";
                     &.password {
                         margin-top: 0;
                     }
+
+                    @media #{$r-max-tablet} {
+                        height: 26px;
+                        font-size: 16px;
+                    }
+
+                    @media #{$r-max-mobile-s} {
+                        font-size: 12px;
+                    }
                 }
 
                 &-submit_btn {
@@ -247,9 +282,15 @@ import Axios from "axios";
                     background-color: $c-green-theme;
                     border: none;
                     border-radius: 3px;
-                    margin: 25px 0 15px;
+                    margin: 15px 0 10px;
                     cursor: pointer;
                     transition: .3s;
+
+                    @media #{$r-max-tablet} {
+                        padding: 10px 0;
+                        font-size: 16px;
+                        margin: 10px 0 5px;
+                    }
                 }
 
                 
@@ -263,14 +304,22 @@ import Axios from "axios";
                     label {
                         font-size: 16px;
                         color: $c-a;
+
+                        @media #{$r-max-mobile-s} {
+                            font-size: 12px;
+                        }
                     }
                 }
             }
 
             &-below {
-                width: 100%;
+                width: 300px;
                 font-size: 14px;
                 color: $c-a;
+
+                @media #{$r-max-mobile-s} {
+                    font-size: 12px;
+                }
 
                 .link {
                     transition: .3s;

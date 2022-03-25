@@ -1,30 +1,30 @@
 <template>
   <div class="about">
     <Header />
-    <div class="top__about">
+    <div class="about__top">
 
-      <div class="top__about-pic">
+      <div class="about__top-pic">
         <div class="img-container">
           <img class="aboutme" alt="Picture about me" src="../../assets/images/profile.jpg">
           <a class="social" target="blank" href="https://www.facebook.com/krisztian.pasztor.56"><i class="icon fab fa-facebook"></i></a>
           <a class="social"><i class="icon fab fa-instagram"></i></a>
-          <a class="social"><i class="icon fab fa-twitter"></i></a>
+          <a class="social"><i class="icon fas fa-phone"></i></a>
           <a class="social" target="blank" href="https://github.com/pkrisz20"><i class="icon fab fa-github"></i></a>
           <a class="social"><i class="icon fab fa-discord"></i></a>
-          <a class="social"><i class="icon fas fa-envelope"></i></a>
+          <a class="social"><i class="icon fas fa-paper-plane"></i></a>
         </div>
       </div>
 
-      <div class="top__about-nametext">
+      <div class="about__top-nametext">
         <h1>Hi,</h1>
         <h1>I'm <span class="name">Krisztian Pasztor</span></h1>
         <h2>Junior Web Developer</h2>
-        <a class="contact-me">Where do I work? <i class="fas fa-long-arrow-alt-right"></i></a>
+        <a href="https://digitalhive.io/" target="blank" class="my-workplace">Where do I work? <i class="fas fa-long-arrow-alt-right"></i></a>
       </div>
 
     </div>
 
-    <div class="bottom__about">
+    <div class="about__bottom">
 
       <Tabs>
         <Tab class="tab" name="Skills" :selected="true">
@@ -74,28 +74,27 @@
 </template>
 
 <script>
-import Header from '../../components/Header.vue';
-import Tabs from '../../components/Tabs.vue';
-import Tab from '../../components/Tab.vue';
+import Header from '@/components/guest/Header.vue';
+import Tabs from '@/components/global/Tabs.vue';
+import Tab from '@/components/global/Tab.vue';
 
 export default {
   name: "About",
   components: {
     Header,
     Tabs,
-    Tab
+    Tab,
   },
-
 }
 </script>
 
 <style lang="scss">
 .about {
-  background-color: $c-dark-blue;
   width: 100%;
   height: 100%;
+  background-color: $c-dark-blue;
 
-  .top__about {
+  &__top {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -104,9 +103,31 @@ export default {
     height: auto;
     margin: 0 auto;
 
+    @media #{$r-max-laptop-m} {
+      width: 100%;
+      margin: 0;
+      padding: 80px 0 0;
+    }
+
+    @media #{$r-max-tablet} {
+      padding: 80px 0 0;
+      flex-direction: column-reverse;
+      justify-content: center;
+    }
+
     &-pic {
       height: 500px;
       width: auto;
+
+      @media #{$r-max-laptop-s} {
+        height: auto;
+        width: 360px;
+      }
+
+      @media #{$r-max-tablet} {
+        width: 60%;
+        margin-top: 50px;
+      }
 
       .img-container {
         width: 100%;
@@ -116,8 +137,7 @@ export default {
         position: relative;
 
         img {
-          object-fit: cover;
-          object-position: center;
+          @include object-fit();
           width: 100%;
           height: 100%;
           border-radius: 20px;
@@ -153,17 +173,17 @@ export default {
               }
             }
 
-            &.fa-twitter {
+            &.fa-phone {
               top: 75%;
               transform: translateY(-75%);
               left: -45px;
 
               &:hover {
-                color: $c-twitter;
+                color: $c-phone;
               }
             }
 
-            &.fa-envelope {
+            &.fa-paper-plane {
               top: 25%;
               transform: translateY(-25%);
               right: -45px;
@@ -219,11 +239,11 @@ export default {
             .icon {
               pointer-events: auto;
 
-              &.fa-facebook, &.fa-instagram, &.fa-twitter {
+              &.fa-facebook, &.fa-instagram, &.fa-phone {
                 left: 50px;
               }
 
-              &.fa-envelope, &.fa-discord, &.fa-github {
+              &.fa-paper-plane, &.fa-discord, &.fa-github {
                 right: 50px;
               }
             }
@@ -235,12 +255,24 @@ export default {
     &-nametext {
       height: 100%;
 
+      @media #{$r-max-tablet} {
+        text-align: center;
+      }
+
       h1 {
         color: $c-c;
         font-size: 50px;
 
+        @media #{$r-max-laptop-s} {
+          font-size: 32px;
+        }
+
+        @media #{$r-max-mobile-l} {
+          font-size: 26px;
+        }
+
         .name {
-          color: $c-dark-theme;
+          color: $c-dark-blue;
           background-color: $c-c;
           border-radius: 5px;
           padding: 2px 10px;
@@ -250,15 +282,25 @@ export default {
       h2 {
         font-size: 36px;
         color: $c-green-theme;
+
+        @media #{$r-max-laptop-s} {
+          font-size: 30px;
+        }
+
+        @media #{$r-max-mobile-l} {
+          font-size: 22px;
+          margin-bottom: 30px;
+        }
       }
 
-      .contact-me {
+      .my-workplace {
         border: 2px solid $c-c;
         font-size: 16px;
         font-family: $c-main-font;
         padding: 12px 18px;
         color: $c-c;
         cursor: pointer;
+        text-decoration: none;
         background: transparent;
         transition: color .3s ease-in-out;
         z-index: 1;
@@ -289,19 +331,23 @@ export default {
     }
   }
 
-  .bottom__about {
+  &__bottom {
     padding: 0 15px;
     width: 1170px;
     height: auto;
     margin: 50px auto 0;
 
+    @media #{$r-max-laptop-m} {
+      width: 100%;
+      margin: 40px 0 0;
+      padding: 0;
+    }
+
     .tabs-container {
 
       .tabs {
           ul {
-              display: flex;
-              justify-content: center;
-              align-items: center;
+              @include flexCenter();
               padding: 0;
               margin: 0;
 
@@ -311,6 +357,10 @@ export default {
                   padding: 8px 12px;
                   position: relative;
                   cursor: pointer;
+
+                  @media #{$r-max-mobile-l} {
+                    margin: 0;
+                  }
 
                   &::before {
                       transition: all .3s;
@@ -328,6 +378,10 @@ export default {
                       color: $c-c;
                       font-size: 26px;
                       transition: .3s;
+
+                      @media #{$r-max-mobile-l} {
+                        font-size: 16px;
+                      }
                   }
 
                   &.is-active {
@@ -356,10 +410,13 @@ export default {
         width: 100%;
         min-height: 260px;
 
+        @media #{$r-max-laptop-m} {
+          padding: 0 15px;
+          width: auto;
+        }
+
         .tab {
-          display: flex;
-          justify-content: center;
-          align-items: center;
+          @include flexCenter();
           width: 100%;
 
           .skill {
@@ -373,6 +430,11 @@ export default {
               color: $c-c;
               font-size: 24px;
               margin: 6px 0;
+
+              @media #{$r-max-mobile-l} {
+                font-size: 16px;
+                margin: 12px 0;
+              }
             }
           }
 
@@ -417,6 +479,10 @@ export default {
             padding: 0;
             margin: 0;
 
+            @media #{$r-max-mobile-s} {
+              text-align: center;
+            }
+
             .item {
               font-size: 24px;
               color: $c-c;
@@ -424,6 +490,14 @@ export default {
               display: flex;
               flex-direction: column;
               align-items: center;
+
+              @media #{$r-max-tablet} {
+                font-size: 20px;
+              }
+
+              @media #{$r-max-mobile-l} {
+                font-size: 16px;
+              }
 
               p {
                 margin: 0;
@@ -441,6 +515,11 @@ export default {
             font-size: 18px;
             line-height: 30px;
             text-align: justify;
+
+            @media #{$r-max-mobile-l} {
+              font-size: 16px;
+              line-height: 26px;
+            }
           }
         }
       }

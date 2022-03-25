@@ -12,7 +12,7 @@ const routes = [
   },
   {
     path: "/author",
-    name: "About",
+    name: "Author",
     component: () => import("../views/guest/Author.vue"),
   },
   {
@@ -35,6 +35,43 @@ const routes = [
     name: "UserInterface",
     component: () => import("../views/user/UserInterface.vue"),
   },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("../views/user/Profile.vue"),
+  },
+  {
+    path: "/favourites",
+    name: "Favourites",
+    component: () => import("../views/user/Favourites.vue"),
+  },
+  {
+    path: "/detailsuser",
+    name: "MovieDetailsUser",
+    component: () => import("../views/user/MovieDetails.vue"),
+  },
+  {
+    path: "/detailsguest/:movieId",
+    name: "MovieDetailsGuest",
+    component: () => import("../views/guest/MovieDetails.vue"),
+  },
+  {
+    path: "/Moviesuser/:category",
+    name: "Moviesuser",
+    component: () => import("../views/user/Movies.vue"),
+    props: true
+  },
+  {
+    path: "/Moviesguest/:category",
+    name: "Moviesguest",
+    component: () => import("../views/guest/Movies.vue"),
+    props: true
+  },
+  // {
+  //   path: "/newandpopular",
+  //   name: "NewAndPopular",
+  //   component: () => import("../views/user/NewAndPopular.vue"),
+  // },
 ];
 
 const router = new VueRouter({

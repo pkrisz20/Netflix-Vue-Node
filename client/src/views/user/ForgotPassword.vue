@@ -82,8 +82,7 @@
         .reset-image {
             width: 100%;
             height: 100vh;
-            object-fit: cover;
-            object-position: center;
+            @include object-fit();
         }
 
         .reset {
@@ -94,10 +93,8 @@
             background-color: rgba($c-black, 0.8);
             border-radius: 5px;
             padding: 65px;
-            display: flex;
+            @include flexCenter();
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
 
             &-title {
                 font-size: 30px;
@@ -107,10 +104,8 @@
             }
 
             &-form {
-                display: flex;
+                @include flexCenter();
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
                 width: 300px;
 
                 .error {

@@ -1,7 +1,7 @@
 <template>
     <div class="hero-video">
-        <video autoplay muted loop>
-            <source src="../../assets/videos/nowayhome.mp4" type="video/mp4">
+        <video id="videoHero" autoplay muted loop>
+            <source src="../../assets/videos/herovideo.mp4" type="video/mp4">
         </video>
     </div>
 </template>
@@ -15,16 +15,21 @@
 
 <style lang="scss" scoped>
 .hero-video {
-    width: 100%;
-    height: 90vh;
-    padding: 45px 0 0;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, #111 75%, transparent 94%);
 
     video {
-        object-fit: cover;
-        object-position: center;
-        width: 100%;
-        height: 100%;
-        mask-image: linear-gradient(to bottom, rgba($c-dark-theme, 1) 5%, transparent 95%);
+        position: absolute;
+        width: auto;
+        height: auto;
+        min-width: 100%;
+        min-height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 }
 </style>
