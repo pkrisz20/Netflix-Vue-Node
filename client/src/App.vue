@@ -1,15 +1,12 @@
 <template>
   <div id="app">
-    <router-view />
+    <router-view :key="$route.path" />
   </div>
 </template>
 
 <script>
 export default {
   name: "App",
-  mounted() {
-    // document.getElementById('app').addEventListener('touchstart', fn, detectIt.passiveEvents ? { passive:true } : false);
-  }
 }
 </script>
 

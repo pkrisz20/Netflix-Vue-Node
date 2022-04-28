@@ -1,19 +1,41 @@
 const { db } = require("../db-config");
 const { getCards } = require("../movies/getCards");
-const { insertMovie } = require("../movies/insertMovie");
-const { deleteCard } = require("../movies/deleteCard");
-const { updateCard } = require("../movies/updateCard");
 const { getCategories } = require("../movies/getCategories");
 const { getMovieDetails } = require("../movies/getMovieDetails");
+const { postComment } = require("../movies/postComment");
+const { getComments } = require("../movies/getComments");
+const { getEachComment } = require("../movies/getEachComment");
+const { getReactions } = require("../movies/getReactions");
+const { addReaction } = require("../movies/addReaction");
+const { updateReaction } = require("../movies/updateReaction");
+const { getLikes } = require("../movies/getLikes");
+const { addFeedback } = require("../movies/addFeedback");
+const { updateFeedback } = require("../movies/updateFeedback");
+const { deleteComment } = require("../movies/deleteComment");
+const { addFavourite } = require("../movies/addFavourite");
+const { getFavourites } = require("../movies/getFavourites");
+const { deleteFavourite } = require("../movies/deleteFavourite");
+const { getMoviesByCategory } = require("../movies/getMoviesByCategory");
 
 const express = require("express");
 const moviesRouter = express.Router();
 
 getCards(moviesRouter, db);
-insertMovie(moviesRouter, db);
-deleteCard(moviesRouter, db);
-updateCard(moviesRouter, db);
 getCategories(moviesRouter, db);
 getMovieDetails(moviesRouter, db);
+postComment(moviesRouter, db);
+getComments(moviesRouter, db);
+getEachComment(moviesRouter, db);
+getFavourites(moviesRouter, db);
+getReactions(moviesRouter, db);
+addReaction(moviesRouter, db);
+updateReaction(moviesRouter, db);
+getLikes(moviesRouter, db);
+addFeedback(moviesRouter, db);
+updateFeedback(moviesRouter, db);
+deleteComment(moviesRouter, db);
+addFavourite(moviesRouter, db);
+deleteFavourite(moviesRouter, db);
+getMoviesByCategory(moviesRouter, db);
 
 exports.moviesRouter = moviesRouter;

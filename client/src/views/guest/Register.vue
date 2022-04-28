@@ -106,7 +106,7 @@ import Axios from "axios";
             submitRegistration() {
                 
                 if(this.checkForm()) {
-                    Axios.post("http://localhost:3000/register", { email: this.email, username: this.username, pass: this.password })
+                    Axios.post("http://localhost:3000/users/register", { email: this.email, username: this.username, pass: this.password })
                     .then((res) => {
                         if (!res.data[0]) {
                             this.errorMessage = res.data[1];

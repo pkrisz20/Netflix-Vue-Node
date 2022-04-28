@@ -3,7 +3,7 @@
     <Header />
     <Hero />
     <Commercial />
-    <BlockTitle :title="'All categories'"/>
+    <BlockTitle :title="'Each category'"/>
     <MovieList :movies=$store.state.list />
     <Footer />
   </div>
@@ -28,7 +28,9 @@ export default {
     Commercial
   },
   mounted() {
-      this.$store.dispatch('getAllMovies');
+    this.$store.dispatch('getAllMovies');
+    this.$store.dispatch("getEachComment");
+    this.$store.dispatch("getLikes");
   },
 };
 </script>

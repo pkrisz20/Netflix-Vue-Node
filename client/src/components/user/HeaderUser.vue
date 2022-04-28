@@ -157,8 +157,8 @@
                 <img
                     v-else-if="returnUserProfile != null"
                     class="user-img"
-                    alt="user profile picture"
-                    :src="'data:image.*;base64,' + returnUserProfile"
+                    alt="user-profile-picture"
+                    :src="getImagePath"
                 />
 
                 <div class="user-options" v-show="isOpenOptions">
@@ -210,6 +210,9 @@ Axios.defaults.withCredentials = true;
                 returnUserProfile: state => state.actualUserData.image,
                 returnCategories: state => state.categories,
             }),
+            getImagePath () {
+                return require('../../../../server/uploads/profiles/' + this.returnUserProfile);
+            }
         },
         // return the actual width of the window
         created() {
@@ -233,7 +236,7 @@ Axios.defaults.withCredentials = true;
             },
 
             categoriesRoute(link) {
-                this.$router.push({ path: `/Moviesuser/${link}` });
+                this.$router.push({ path: `/moviesuser/${link}` });
                 console.log(link);
             },
 
@@ -301,14 +304,15 @@ Axios.defaults.withCredentials = true;
             });
 
             //close the sidebar if clicks outside
-            document.addEventListener('click', (event) => {
+            document.addEventListener("click", (event) => {
                 if (event.target.closest('.hamburgermenu')) return;
                 if (event.target.closest('.nav-links')) return;
-                this.openSidebar = false;
-                document.body.style.overflowY = 'scroll';
+                if (this.openSidebar === true) {
+                    this.openSidebar = false;
+                    document.body.style.overflowY = 'scroll';
+                }
             });
 
-            //get movie categories from the store
             this.$store.dispatch('getCategories');
             this.$store.dispatch('getActualUserData');
         },

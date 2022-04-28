@@ -69,7 +69,7 @@ Axios.defaults.withCredentials = true;
             submitLogin() {
                 
                 if (this.checkForm()) {
-                    Axios.post("http://localhost:3000/login", { username: this.username, pass: this.password })
+                    Axios.post("http://localhost:3000/users/login", { username: this.username, pass: this.password })
                     .then((res) => {
                         
                         if (!res.data.status) {
@@ -78,6 +78,7 @@ Axios.defaults.withCredentials = true;
 
                         else if (res.data.status) {
                             this.$router.push({ name: 'UserInterface'});
+                            this.$store.state.isLoggedIn = true;
                         }
                     });
                     this.username = '';

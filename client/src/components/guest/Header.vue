@@ -76,7 +76,7 @@ import Dropdown from '../global/Dropdown.vue';
         
         methods: {
             categoriesRoute(link) {
-                this.$router.push({ path: `/Moviesguest/${link}` });
+                this.$router.push({ path: `/moviesguest/${link}` });
             },
 
             openMenu() {

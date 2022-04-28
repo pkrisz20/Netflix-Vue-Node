@@ -56,7 +56,14 @@
         },
         methods: {
             routeToDetails(movieId) {
-                this.$router.push({ path: `/detailsguest/${movieId}` });
+
+                if ($store.state.isLoggedIn) {
+                    this.$router.push({ path: `/detailsuser/${movieId}` });
+                }
+
+                else if (!$store.state.isLoggedIn) {
+                    this.$router.push({ path: `/detailsguest/${movieId}` });
+                }
             },
             // deleteCard(id) {
             //     Axios.delete(`http://localhost:3000/movies/delete/${id}`)

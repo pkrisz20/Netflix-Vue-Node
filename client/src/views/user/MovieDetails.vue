@@ -1,70 +1,142 @@
 <template>
 <div>
-    <HeaderUser @openUploadForm="openModal"/>
-    <AddMovieForm ref="modalUploadForm"/>
+    <LoadingScreen v-if="httpStatusCode == 0" />
+    <HeaderUser />
     <div class="bg-linear">
-        <div class="container">
-            <img class="cover-image" alt="background" src="../../assets/images/peaky.jpg">
+        <div class="container" v-for="item in getMovieDetails" :key="item.id">
+            <img class="cover-image" alt="background" :src="getImagePath(item.image)">
+
+            <div class="fav-success" v-if="favouriteSuccess">{{ favouriteSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
 
             <div class="movie-details">
-                <h1 class="movie-title">{{ movieTitle }}</h1>
+                <h1 class="movie-title">{{ item.movieName }}</h1>
                 <div class="movie-info-box">
 
-                    <div class="info"><i class="far fa-hourglass-half"></i> Duration: {{ movieDuration }}</div>
+                    <!-- <div class="info"><i class="far fa-hourglass-half"></i> Duration: {{ movieDuration }}</div> -->
 
-                    <div class="info"><i class="far fa-calendar-star"></i> Release: {{ releaseDate }}</div>
+                    <div class="info"><i class="far fa-calendar-star"></i> Release: {{ item.releaseDate }}</div>
 
-                    <div class="info"><i class="fas fa-film-alt"></i> Category: {{ movieType }}</div>
+                    <div class="info"><i class="fas fa-film-alt"></i> Category:
+                        <span v-for="category in getCategories" :key="category">{{ category }}</span>
+                    </div>
                 </div>
 
-                <p class="movie-desc">{{ movieDescription }}</p>
+                <p class="movie-desc">{{ item.movieDescription }}</p>
 
                 <div class="btns">
                     <button class="btn watch"><i class="fas fa-play"></i> WATCH</button>
                     <button class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
-                    <button class="btns-favourite"><i class="fas fa-heart"></i></button>
-                    <button class="btns_likes like">
+                    <button @click="addFavourite(item.id)" class="btns-favourite"><i class="fas fa-heart"></i></button>
+
+                    <button @click="addLike()" class="btns_likes like" :class="{ movieliked: isLiked(item.id) }">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 489.543 489.543" xml:space="preserve"><path d="M270.024 0c-22.6 0-15 48.3-15 48.3s-48.3 133.2-94.5 168.7c-9.9 10.4-16.1 21.9-20 31.3-.9 2.3-1.7 4.5-2.4 6.5-3.1 6.3-9.7 16-23.8 24.5l46.2 200.9s71.5 9.3 143.2 7.8c28.7 2.3 59.1 2.5 83.3-2.7 82.2-17.5 61.6-74.8 61.6-74.8 44.3-33.3 19.1-74.9 19.1-74.9 39.4-41.1.7-75.6.7-75.6s21.3-33.2-6.2-58.3c-34.3-31.4-127.4-10.5-127.4-10.5-6.5 1.1-13.4 2.5-20.8 4.3 0 0-32.2 15 0-82.7 32.3-97.7-21.4-112.8-44-112.8zM127.324 465.7l-35-166.3c-2-9.5-11.6-17.3-21.3-17.3h-66.8l-.1 200.8h109.1c9.8.1 16.1-7.7 14.1-17.2z"/></svg>
                         Like
                     </button>
-                    <button class="btns_likes dislike">
+                    <button @click="addDislike()" class="btns_likes dislike" :class="{ moviedisliked: isDisliked(item.id) }">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xml:space="preserve"><path d="M117.333 10.667h-64C23.936 10.667 0 34.603 0 64v170.667C0 264.064 23.936 288 53.333 288H160c5.888 0 10.667-4.779 10.667-10.667V64c0-29.397-23.936-53.333-53.334-53.333zM512 208c0-18.496-10.603-34.731-26.347-42.667 3.285-6.549 5.013-13.781 5.013-21.333 0-18.496-10.603-34.752-26.368-42.688 4.864-9.728 6.293-20.928 3.84-32.043C463.36 47.68 443.051 32 419.819 32H224c-7.232 0-16.405 1.173-25.771 3.285-5.739 1.301-9.344 6.976-8.064 12.693C191.403 53.632 192 58.859 192 64v213.333c0 5.739-1.6 11.264-4.736 16.448a10.623 10.623 0 0 0-.555 9.984l47.957 103.893v72.32a10.75 10.75 0 0 0 3.989 8.341c.683.555 16.512 13.013 38.677 13.013 24.683 0 64-39.061 64-85.333 0-29.184-10.453-65.515-16.96-85.333h131.755c28.715 0 53.141-21.248 55.637-48.341 1.387-15.189-3.669-29.824-13.632-40.725C506.901 232.768 512 220.821 512 208z"/></svg>
                         Dislike
                     </button>
                 </div>
             </div>
         </div>
-        <Comments />
+        <Comments :movieID=this.movieId />
     </div>
 </div>
 </template>
 
 <script>
-import HeaderUser from "../../components/user/HeaderUser.vue";
-import Comments from "../../components/user/Comments.vue";
-import AddMovieForm from "../../components/user/AddMovieForm.vue";
+import Axios from "axios";
+import HeaderUser from "@/components/user/HeaderUser.vue";
+import Comments from "@/components/user/Comments.vue";
+import LoadingScreen from "@/components/global/LoadingScreen.vue";
+import { mapState, mapGetters } from "vuex";
 
     export default {
         name: "Moviedetails",
         components: {
             Comments,
             HeaderUser,
-            AddMovieForm
+            LoadingScreen
         },
         data() {
             return {
-                movieTitle: 'Peaky Blinders',
-                movieDuration: '5 Season',
-                releaseDate: 2016,
-                movieType: 'Series',
-                movieDescription: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint, exercitationem? Corrupti, possimus inventore! Atque nisi dolor explicabo nesciunt iusto omnis commodi quos, voluptate repellat quidem nostrum accusantium ex, corporis laudantium sunt fugit culpa beatae deleniti voluptatibus eaque libero molestiae! Vel fugit, officia eaque ullam sunt exercitationem magnam tempora mollitia voluptatum.',
+                movieId: this.$route.params.movieId,
+                favouriteSuccess: ''
             }
         },
         methods: {
-            openModal() {
-                this.$refs.modalUploadForm.openModal();
+            scrollToTop() {
+                window.scrollTo(0, 0);
+            },
+            closeMessage() {
+                this.favouriteSuccess = '';
+            },
+            getImagePath (image) {
+                return require('../../../../server/uploads/movies/' + image);
+            },
+            addLike() {
+                if (this.isLiked(this.movieId)) {
+                    // unlike if the movie is already liked
+                    this.$store.dispatch("updateFeedback", [this.movieId, 'like', false]);
+                }
+                else if (!this.isLiked(this.movieId)) {
+                    //like the movie without delete dislike
+                    if (!this.isDisliked(this.movieId)) {
+                        this.$store.dispatch("addFeedback", [this.movieId, true]);
+                    }
+                    //like the movie and delete dislike
+                    else if (this.isDisliked(this.movieId)) {
+                        this.$store.dispatch("updateFeedback", [this.movieId, 'like', true]);
+                    }
+                }
+            },
+            addDislike() {
+                if (this.isDisliked(this.movieId)) {
+                    // disable dislike if the movie is already disliked
+                    this.$store.dispatch("updateFeedback", [this.movieId, 'dislike', false]);
+                }
+                else if (!this.isDisliked(this.movieId)) {
+                    //dislike the movie without delete like
+                    if (!this.isLiked(this.movieId)) {
+                        this.$store.dispatch("addFeedback", [this.movieId, false]);
+                    }
+                    //dislike the movie and delete like
+                    else if (this.isLiked(this.movieId)) {
+                        this.$store.dispatch("updateFeedback", [this.movieId, 'dislike', true]);
+                    }
+                }
+            },
+            async addFavourite(movie) {
+                // this.$store.dispatch("addFavourite", this.movieId);
+                await Axios.post(`http://localhost:3000/movies/addfavourite/${movie}`)
+                .then((response) => {
+                    if (response.data.status) {
+                        this.favouriteSuccess = response.data.message;
+                    }
+                    else if (!response.data.status) {
+                        this.favouriteSuccess = response.data.message;
+                    }
+                });
             }
         },
+        computed: {
+            ...mapState({
+                getMovieDetails: state => state.movieDetails,
+                getCategories: state => state.categoriesDetails,
+                httpStatusCode: state => state.httpStatus,
+            }),
+            ...mapGetters({
+                isLiked: 'isLikedMovie',
+                isDisliked: 'isDislikedMovie'
+            })
+        },
+        created() {
+            this.$store.dispatch("getMovieDetails", this.movieId);
+            this.$store.dispatch("getLikes");
+            setTimeout(() => {
+                this.scrollToTop();
+            }, 150);
+        }
     }
 </script>
 
@@ -73,6 +145,7 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
     position: relative;
     width: 100%;
     height: auto;
+    background-color: $c-dark-theme;
 
     &::after {
         position: absolute;
@@ -81,8 +154,8 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
         content: '';
         width: 100%;
         height: 100%;
-        background: linear-gradient($c-black, $c-skyblue);
-        opacity: 0.75;
+        background-color: $c-black;
+        opacity: 0.7;
     }
 
     .container {
@@ -92,6 +165,31 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
 
         @media #{$r-max-tablet} {
             min-height: 100%;
+        }
+
+        .fav-success {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 8;
+            padding: 14px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            color: $c-white;
+            background: $c-green-theme;
+            text-align: center;
+            display: flex;
+
+            i {
+                cursor: pointer;
+                font-size: 25px;
+                margin-left: 8px;
+            }
+
+            @media #{$r-max-tablet} {
+                width: 100%;
+            }
         }
 
         .cover-image {
@@ -157,6 +255,10 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
                         margin: 0 30px;
                         font-weight: 700;
                         font-size: 24px;
+
+                        span {
+                            margin: 0 8px;
+                        }
 
                         @media #{$r-max-laptop-s} {
                             margin: 0 25px;
@@ -236,7 +338,7 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
                     }
 
                     &.watch {
-                        background: $c-green-theme;
+                        background-color: $c-green-theme;
 
                         &:hover {
                             background-color: $c-success;
@@ -245,7 +347,7 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
                     }
 
                     &.add {
-                        background: $c-white;
+                        background-color: $c-white;
 
                         &:hover {
                             background-color: $c-b;
@@ -259,7 +361,7 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
                     transition: all .3s;
                     margin: 0 20px;
                     font-size: 35px;
-                    background: none;
+                    background-color: transparent;
                     color: $c-white;
 
                     @media #{$r-max-laptop-s} {
@@ -315,6 +417,16 @@ import AddMovieForm from "../../components/user/AddMovieForm.vue";
                             background-color: $c-error;
                         }
                     }
+                }
+
+                .movieliked {
+                    transform: scale(1.1);
+                    background-color: $c-blue;
+                }
+
+                .moviedisliked {
+                    transform: scale(1.1);
+                    background-color: $c-error;
                 }
             }
         }

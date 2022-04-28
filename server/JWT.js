@@ -65,6 +65,7 @@ const verifyJWT = (req, res, next) => {
         }
         catch (error) {     //It runs when the refresh token is expired
             console.log("Please sign in");
+            console.log(error);
             res.clearCookie("user");
             // console.log('res.status.403');
             res.json({ loggedIn: false }); //the user needs to sign in

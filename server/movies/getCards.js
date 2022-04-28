@@ -1,13 +1,16 @@
 const getCards = (moviesRouter, db) => moviesRouter.get("/get", (_req, res) => {
     const sqlSelect = "SELECT * FROM movies";
 
-    db.query(sqlSelect, (_err, result) => {
+    db.query(sqlSelect, (err, result) => {
 
-        for (const product of result) {
-            const buf = new Buffer.from(product.image);
-            product.image = buf.toString("base64");
+        if (err) {
+            console.log(err);
+            res.json({ status: false, message: "Something went wrong" });
         }
-        res.send(result);
+
+        else if (result) {
+            res.json({ status: true, result: result });
+        }
     });
 });
 

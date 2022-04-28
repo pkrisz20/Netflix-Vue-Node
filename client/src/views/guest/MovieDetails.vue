@@ -1,9 +1,10 @@
 <template>
 <div>
+    <LoadingScreen v-if="httpStatusCode == 0" />
     <Header />
     <div class="bg-linear">
         <div class="container" v-for="item in getMovieDetails" :key="item.id">
-            <img class="cover-image" alt="background" :src="'data:image.*;base64,' + item.image">
+            <img class="cover-image" alt="background" :src="getImagePath(item.image)">
 
             <div class="movie-details">
                 <h1 class="movie-title">{{ item.movieName }}</h1>
@@ -13,39 +14,60 @@
 
                     <div class="info"><i class="far fa-calendar-star"></i> Release: {{ item.releaseDate }}</div>
 
-                    <!-- <div class="info"><i class="fas fa-film-alt"></i> Category: {{ item.movieType }}</div> -->
+                    <div class="info category"><i class="fas fa-film-alt"></i> Category:
+                        <span v-for="category in getCategories" :key="category">{{ category }}</span>
+                    </div>
                 </div>
 
                 <p class="movie-desc">{{ item.movieDescription }}</p>
             </div>
         </div>
-        <Comments />
+        <Comments :movieID=this.movieId />
     </div>
 </div>
 </template>
 
 <script>
 import Header from "@/components/guest/Header.vue";
-import Comments from "@/components/guest/Comments.vue";
+import Comments from "@/components/user/Comments.vue";
+import LoadingScreen from "@/components/global/LoadingScreen.vue";
 
     export default {
         name: "Moviedetails",
         components: {
             Comments,
-            Header
+            Header,
+            LoadingScreen
         },
         data() {
             return {
                 movieId: this.$route.params.movieId,
             }
         },
+        methods: {
+            scrollToTop() {
+                window.scrollTo(0, 0);
+            },
+            getImagePath (image) {
+                return require('../../../../server/uploads/movies/' + image);
+            },
+        },
         computed: {
             getMovieDetails() {
                 return this.$store.state.movieDetails;
+            },
+            getCategories() {
+                return this.$store.state.categoriesDetails;
+            },
+            httpStatusCode() {
+                return this.$store.state.httpStatus;
             }
         },
         created() {
             this.$store.dispatch("getMovieDetails", this.movieId);
+            setTimeout(() => {
+                this.scrollToTop();
+            }, 150);
         },
     }
 </script>
@@ -117,7 +139,7 @@ import Comments from "@/components/guest/Comments.vue";
                     display: flex;
                     align-items: center;
 
-                    @media #{$r-max-tablet} {
+                    @media #{$r-max-laptop-s} {
                         flex-direction: column;
                         align-items: flex-start;
                     }
@@ -127,12 +149,21 @@ import Comments from "@/components/guest/Comments.vue";
                         margin: 0 30px;
                         font-weight: 700;
                         font-size: 24px;
-                        
-                        @media #{$r-max-laptop-s} {
-                            margin: 0 25px;
+
+                        &.category {
+                            display: flex;
+                            flex-wrap: wrap;
                         }
 
-                        @media #{$r-max-tablet} {
+                        i {
+                            margin-right: 8px;
+                        }
+
+                        span {
+                            margin: 0 8px;
+                        }
+                        
+                        @media #{$r-max-laptop-s} {
                             margin: 10px 0;
                         }
 

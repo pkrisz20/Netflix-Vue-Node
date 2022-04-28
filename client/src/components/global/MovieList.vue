@@ -1,7 +1,6 @@
 <template>
     <div class="movies_section">
-        <div class="success" v-if="SuccesMessage">{{ SuccesMessage }} <i @click="closeMessage" class="fas fa-times"></i></div>
-        <div class="error" v-if="errorMessage">{{ errorMessage }} <i @click="closeMessage" class="fas fa-times"></i></div>
+        <div class="error" v-if="errorMessage">{{ errorMessage }}</div>
         
         <div class="wrapper">
             <div class="listCards">
@@ -15,19 +14,25 @@
                         <div class="share">
                             <i class="fas fa-share"></i>
                         </div>
+                        <div class="favourite" @click="addToFavourites(item.id)" v-if="!isFavourite(item.id) && returnLoginStatus">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="cancel" @click="removeFavourite(item.id)" v-if="isFavourite(item.id) && returnLoginStatus">
+                            <i class="fas fa-ban"></i>
+                        </div>
                     </div>
 
                     <div class="card_image">
-                        <img class="thumbnail" alt="moviepicture" :src="'data:image.*;base64,' + item.image">
+                        <img class="thumbnail" alt="moviepicture" :src="getImagePath(item.image)">
                     </div>
                     <h2 class="card_title">{{ item.movieName }}</h2>
                     <h4 class="card_realease">{{ item.releaseDate }}</h4>
 
-                    <!-- <div class="card_bottom">
-                        <div class="card_bottom-comments"><i class="fas fa-comment-alt-dots"></i> {{ comments }}</div>
-                        <div class="card_bottom-likes"><i class="fas fa-thumbs-up"></i> {{ likes }}</div>
-                        <div class="card_bottom-dislikes"><i class="fas fa-thumbs-down"></i> {{ dislikes }}</div>
-                    </div> -->
+                    <div class="card_bottom">
+                        <div class="card_bottom-comments"><i class="fas fa-comment-alt-dots"></i>{{ comments(item.id) }}</div>
+                        <div class="card_bottom-likes"><i class="fas fa-thumbs-up"></i> {{ likes(item.id) }}</div>
+                        <div class="card_bottom-dislikes"><i class="fas fa-thumbs-down"></i> {{ dislikes(item.id) }}</div>
+                    </div>
                 </div>
 
             </div>
@@ -36,58 +41,70 @@
 </template>
 
 <script>
-    export default {
-        name: "MovieList",
-        props: {
-            movies: Array,    //this will contain the dinamic array which we have to foreach
-            categories: Array   //this will contain the categories which belong to the actual movie
+import Axios from "axios";
+import { mapGetters } from "vuex";
+
+export default {
+    name: "MovieList",
+    props: {
+        movies: Array
+    },
+    data() {
+        return {
+            errorMessage: ''
+        }
+    },
+    computed: {
+        returnLoginStatus() {
+            return this.$store.state.isLoggedIn;
         },
-        data() {
-            return {
-                SuccesMessage: '',
-                errorMessage: '',
+        ...mapGetters({
+            comments: 'getCommentsForList',
+            dislikes: 'getDislikesCount',
+            likes: 'getLikesCount',
+            isFavourite: 'checkIsFavourite'
+        }),
+    },
+    methods: {
+        getImagePath (image) {
+            return require('../../../../server/uploads/movies/' + image);
+        },
+        routeToDetails(movieId) {
+            if (this.returnLoginStatus) {
+                this.$router.push({ path: `/detailsuser/${movieId}` });
             }
-        },
-        methods: {
-            routeToDetails(movieId) {
+
+            if (!this.returnLoginStatus) {
                 this.$router.push({ path: `/detailsguest/${movieId}` });
-            },
-            closeMessage() {
-                this.SuccesMessage = '';
-                this.errorMessage = '';
             }
         },
-    }
+        async addToFavourites(movie) {
+            await Axios.post(`http://localhost:3000/movies/addfavourite/${movie}`)
+            .then((response) => {
+                if (response.data.status) {
+                    this.favouriteSuccess = response.data.message;
+                }
+                else if (!response.data.status) {
+                    this.favouriteSuccess = response.data.message;
+                }
+            });
+        },
+        async removeFavourite(movie) {
+            await Axios.delete(`http://localhost:3000/movies/removefavourite/${movie}`)
+            .then((response) => {
+                if (response.data.status) {
+                    this.favouriteSuccess = response.data.message;
+                }
+                else if (!response.data.status) {
+                    this.favouriteSuccess = response.data.message;
+                }
+            });
+        },
+    },
+}
 </script>
 
 <style lang="scss" scoped>
-.success {
-    width: auto;
-    padding: 20px;
-    border-radius: 10px;
-    border: 6px solid $c-success;
-    font-size: 20px;
-    color: $c-white;
-    background: $c-green-theme;
-    z-index: 10;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    @include flexCenter();
-
-    i {
-        font-size: 40px;
-        cursor: pointer;
-        transition: .3s;
-        margin-left: 20px;
-
-        &:hover {
-            transform: scale(1.2);
-        }
-    }
-}
-
 .error {
     width: auto;
     padding: 20px;
@@ -102,17 +119,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     @include flexCenter();
-
-    i {
-        font-size: 40px;
-        cursor: pointer;
-        transition: .3s;
-        margin-left: 20px;
-
-        &:hover {
-            transform: scale(1.2);
-        }
-    }
+    pointer-events: none;
 }
 
 .movies_section {
@@ -172,7 +179,7 @@
             background-color: $c-green-theme;
             transition: right .3s ease;
 
-            .info, .share {
+            .info, .share, .favourite, .cancel {
                 padding: 10px;
                 transition: all .3s ease-in-out;
 

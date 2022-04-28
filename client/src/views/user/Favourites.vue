@@ -1,23 +1,22 @@
 <template>
     <div class="favourites">
+        <LoadingScreen v-if="httpStatusCode == 0"/>
         <HeaderUser @openUploadForm="openModal"/>
         <AddMovieForm ref="modalUploadForm"/>
-        <BlockTitle :title="'Your Favourites'" />
+        <BlockTitle :title="'My Favourites'" />
         
         <div class="favourites-container">
             <div class="wrapper">
-                <Filters />
+                <Filters v-if="$store.getters.getFavourites != 0" />
             </div>
-            <!-- <h2 class="favourites-title">Your Favourites</h2> -->
-            <!-- <div style="color: #fff;" v-for="(item, i) in $store.state.list" :key="i">
-                {{ item.movieReview }}
-            </div> -->
-            <MovieList />
+            <div class="emptylist" v-if="$store.getters.getFavourites == 0">You haven't added any movie to your favourites list yet.</div>
+            <MovieList :movies=$store.getters.getFavourites />
         </div>
     </div>
 </template>
 
 <script>
+import LoadingScreen from "@/components/global/LoadingScreen.vue";
 import BlockTitle from "@/components/global/BlockTitle.vue";
 import HeaderUser from '@/components/user/HeaderUser.vue';
 import MovieList from '@/components/global/MovieList.vue';
@@ -31,7 +30,13 @@ export default {
         MovieList,
         AddMovieForm,
         Filters,
+        LoadingScreen,
         BlockTitle
+    },
+    computed: {
+        httpStatusCode() {
+            return this.$store.state.httpStatus;
+        }
     },
     methods: {
         openModal() {
@@ -39,12 +44,32 @@ export default {
         }
     },
     mounted() {
-        this.$store.dispatch('getAllMovies');
+        this.$store.dispatch("getAllMovies");
+        this.$store.dispatch("getLikes");
+        this.$store.dispatch("getEachComment");
+        this.$store.dispatch("getFavourites");
     }
 }
 </script>
 
 <style lang="scss">
+.emptylist {
+    width: auto;
+    padding: 20px;
+    font-size: 20px;
+    color: $c-white;
+    background: $c-error;
+    border-radius: 10px;
+    border: 6px solid #b10101;
+    z-index: 10;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    @include flexCenter();
+    pointer-events: none;
+}
+
 .favourites {
     background-color: $c-3;
     min-height: 100vh;

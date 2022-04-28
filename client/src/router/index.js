@@ -46,7 +46,7 @@ const routes = [
     component: () => import("../views/user/Favourites.vue"),
   },
   {
-    path: "/detailsuser",
+    path: "/detailsuser/:movieId",
     name: "MovieDetailsUser",
     component: () => import("../views/user/MovieDetails.vue"),
   },
@@ -56,13 +56,13 @@ const routes = [
     component: () => import("../views/guest/MovieDetails.vue"),
   },
   {
-    path: "/Moviesuser/:category",
+    path: "/moviesuser/:category",
     name: "Moviesuser",
     component: () => import("../views/user/Movies.vue"),
     props: true
   },
   {
-    path: "/Moviesguest/:category",
+    path: "/moviesguest/:category",
     name: "Moviesguest",
     component: () => import("../views/guest/Movies.vue"),
     props: true

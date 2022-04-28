@@ -1,14 +1,15 @@
 <template>
     <div class="profile">
-        <Header />
+        <HeaderUser />
         <div class="wrapper">
             <div class="profile_page">
+                <div class="success" v-if="returnSuccess">{{ returnSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
+                <div class="error" v-if="returnError">{{ returnError }} <i @click="closeMessage" class="fas fa-times"></i></div>
 
                 <BlockTitle :title="'Your Profile'" />
                 <div class="profile_page-picture">
-
                     <img
-                        v-if="returnUserProfile === null"
+                        v-if="returnUserProfile == null"
                         alt="profile-picture"
                         class="profile_page-picture-img"
                         src='../../assets/images/default_profile.jpg'
@@ -16,23 +17,21 @@
                     <img
                         v-else-if="returnUserProfile != null"
                         class="profile_page-picture-img"
-                        alt="user profile picture"
-                        :src="'data:image.*;base64,' + returnUserProfile"
+                        alt="user-profile-picture"
+                        :src="getImagePath"
                     />
 
-                    <form class="changepicture">
+                    <form class="changepicture" enctype="multipart/form-data" method="POST">
                         <input
                             type="file"
                             class="file-input"
+                            name="image"
                             @change="handleUploadProfile"
                             accept="image/*"
                             id="profilePicture"
                         />
                         <label class="file-label" for="profilePicture"><i class="fas fa-upload upload-icon"></i> Change image</label>
                     </form>
-
-                    <div class="success" v-if="returnSuccess">{{ returnSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
-                    <div class="error" v-if="returnError">{{ returnError }} <i @click="closeMessage" class="fas fa-times"></i></div>
                 </div>
 
                 <!-- EMAIL ROW -->
@@ -124,7 +123,7 @@
 
 <script>
 import BlockTitle from "@/components/global/BlockTitle.vue";
-import Header from '@/components/user/HeaderUser.vue';
+import HeaderUser from '@/components/user/HeaderUser.vue';
 import MovieList from '@/components/global/MovieList.vue';
 import Axios from "axios";
 import { mapState } from "vuex";
@@ -132,7 +131,7 @@ import { mapState } from "vuex";
 export default {
     name: "Profile",
     components: {
-        Header,
+        HeaderUser,
         MovieList,
         BlockTitle
     },
@@ -149,7 +148,6 @@ export default {
             oldPassword: '',
             newPassword: '',
             repeatPassword: '',
-            newProfilePicture: null,
             successEmail: '',
             successUsername: '',
             successPassword: '',
@@ -164,19 +162,15 @@ export default {
             returnError: state => state.errorMessage,
             returnSuccess: state => state.successMessage,
         }),
+        getImagePath () {
+            return require('../../../../server/uploads/profiles/' + this.returnUserProfile);
+        }
     },
 
     methods: {
         //handle profile picture upload
-        handleUploadProfile (ev) {
-            const file = ev.target.files[0];
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-
-            reader.onload = e => {
-                this.newProfilePicture = e.target.result;
-                this.$store.dispatch("updateProfilePicture", this.newProfilePicture);
-            }
+        handleUploadProfile (e) {
+            this.$store.dispatch("updateProfilePicture", e.target.files[0]);
         },
         openForm(value) {
             if (value == 'email') {
@@ -238,7 +232,7 @@ export default {
             }
 
             else {
-                Axios.put("http://localhost:3000/changemail", { newEmail: this.newEmail })
+                Axios.put("http://localhost:3000/users/changemail", { newEmail: this.newEmail })
                 .then((res) => {
                     
                     if (res.data.status) {
@@ -270,7 +264,7 @@ export default {
             }
 
             else {
-                Axios.put("http://localhost:3000/changeusername", { newUsername: this.newUsername })
+                Axios.put("http://localhost:3000/users/changeusername", { newUsername: this.newUsername })
                 .then((res) => {
                     
                     if (res.data.status) {
@@ -303,7 +297,7 @@ export default {
             }
 
             else {
-                Axios.put("http://localhost:3000/changepassword",
+                Axios.put("http://localhost:3000/users/changepassword",
                 {
                     oldPassword: this.oldPassword,
                     newPassword: this.newPassword,
@@ -342,6 +336,49 @@ export default {
             height: auto;
             @include flexCenter();
             flex-direction: column;
+            position: relative;
+
+            .error {
+                position: absolute;
+                z-index: 5;
+                top: 25%;
+                left: 50%;
+                transform: translate(-50%, -25%);
+                padding: 8px 20px;
+                border-radius: 5px;
+                font-size: 16px;
+                color: $c-white;
+                background: $c-error;
+                @include flexCenter();
+
+                i {
+                    font-size: 26px;
+                    cursor: pointer;
+                    transition: .3s;
+                    margin-left: 10px;
+                }
+            }
+
+            .success {
+                position: absolute;
+                z-index: 5;
+                top: 25%;
+                left: 50%;
+                transform: translate(-50%, -25%);
+                padding: 8px 20px;
+                border-radius: 5px;
+                font-size: 16px;
+                color: $c-white;
+                background: $c-success;
+                @include flexCenter();
+
+                i {
+                    font-size: 26px;
+                    cursor: pointer;
+                    transition: .3s;
+                    margin-left: 10px;
+                }
+            }
 
             .movies_section {
                 background-color: $c-dark-blue;
@@ -360,48 +397,6 @@ export default {
                 height: 200px;
                 position: relative;
                 margin-bottom: 50px;
-
-                .error {
-                    position: absolute;
-                    z-index: 5;
-                    top: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 8px 20px;
-                    border-radius: 5px;
-                    font-size: 16px;
-                    color: $c-white;
-                    background: $c-error;
-                    @include flexCenter();
-
-                    i {
-                        font-size: 26px;
-                        cursor: pointer;
-                        transition: .3s;
-                        margin-left: 10px;
-                    }
-                }
-
-                .success {
-                    position: absolute;
-                    z-index: 5;
-                    top: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 8px 20px;
-                    border-radius: 5px;
-                    font-size: 16px;
-                    color: $c-white;
-                    background: $c-success;
-                    @include flexCenter();
-
-                    i {
-                        font-size: 26px;
-                        cursor: pointer;
-                        transition: .3s;
-                        margin-left: 10px;
-                    }
-                }
 
                 &-img {
                     @include object-fit();

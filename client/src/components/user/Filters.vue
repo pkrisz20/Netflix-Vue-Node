@@ -21,7 +21,7 @@
                 <div class="release">
                     <div class="release_toggle">
                         <input id="toggle" class="release_toggle-btn" type="checkbox" @change="toggleDateFilter" />
-                        <label for="toggle">Search by dates</label>
+                        <label for="toggle">Search by release date</label>
                     </div>
 
                     <div class="release_params">
@@ -82,9 +82,6 @@
                 this.$store.state.filterFromYear = null;
             }
         },
-        // computed: {
-        //     ...mapGetters(['filteringCategories',]),
-        // }
     }
 </script>
 

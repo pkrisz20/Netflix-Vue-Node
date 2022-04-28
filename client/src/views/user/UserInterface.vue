@@ -1,8 +1,8 @@
 <template>
     <div class="userinterface">
+        <LoadingScreen v-if="httpStatusCode == 0" />
         <HeaderUser />
         <HeroUser />
-        <AddMovieForm ref="modalUploadForm"/>
         
         <BlockTitle class="first" :title="'Top Series Now'" />
         <MovieCarousel />
@@ -13,47 +13,50 @@
         <BlockTitle class="left-side" :title="'Top Movies Now'" />
         <MovieCarousel />
 
-        <BlockTitle class="left-side" :title="'New & Popular'" />
-        <MovieCarousel />
+        <div class="wrapper">
+            <BlockTitle :title="'Each category'" />
+            <Filters />
+        </div>
+
+        <MovieList :movies=$store.state.list />
         <!-- <Footer /> -->
     </div>
 </template>
 
 <script>
-import BlockTitle from "../../components/global/BlockTitle.vue";
-import HeaderUser from "../../components/user/HeaderUser.vue";
-import HeroUser from "../../components/user/HeroUser.vue";
-import AddMovieForm from "../../components/user/AddMovieForm.vue";
-import MovieCarousel from "../../components/user/MoviesCarousel.vue";
+import LoadingScreen from "@/components/global/LoadingScreen.vue";
+import BlockTitle from "@/components/global/BlockTitle.vue";
+import HeaderUser from "@/components/user/HeaderUser.vue";
+import HeroUser from "@/components/user/HeroUser.vue";
+import MovieCarousel from "@/components/user/MoviesCarousel.vue";
+import MovieList from "@/components/global/MovieList.vue";
+import Filters from "@/components/user/Filters.vue";
 // import Footer from "@/components/global/Footer.vue";
 
     export default {
-        name: "LoggedInUser",
+        name: "Userinterface",
         components: {
             HeaderUser,
             HeroUser,
-            AddMovieForm,
             MovieCarousel,
             BlockTitle,
+            LoadingScreen,
+            MovieList,
+            Filters
             // Footer
         },
-        // methods: {
-        //     handleBackButton() {
-        //         window.onpopstate = function() {
-        //             alert('browser-back');
-        //         };
-        //     }
-        // },
-        // mounted() {
-        //     // if back button is pressed
-        //     window.onpopstate = function(event) {
-        //         window.reload();
-        //         console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
-        //     };
-        // }
-        // beforeDestroy () {
-        //     document.removeEventListener("backbutton", this.handleBackButton);
-        // }
+        computed: {
+            httpStatusCode() {
+                return this.$store.state.httpStatus;
+            }
+        },
+        mounted() {
+            this.$store.dispatch('getAllMovies');
+            this.$store.dispatch("getLoginStatus");
+            this.$store.dispatch("getEachComment");
+            this.$store.dispatch('getLikes');
+            this.$store.dispatch('getFavourites');
+        }
     }
 </script>
 
@@ -79,6 +82,12 @@ import MovieCarousel from "../../components/user/MoviesCarousel.vue";
 
         @media #{$r-max-tablet} {
             justify-content: center;
+        }
+    }
+
+    .wrapper {
+        .searchDetailes {
+            margin-top: 60px;
         }
     }
 }
