@@ -3,7 +3,6 @@ const { verifyJWT } = require('../JWT');
 const addFavourite = (moviesRouter, db) => moviesRouter.post("/addfavourite/:movie", verifyJWT, (req, res) => {
     
     const movieID = req.params.movie;
-    console.log(movieID);
     const checkFavouriteMovie = "SELECT * FROM favourites WHERE movie_id = ? AND user_id = ?;";
     const sql = "INSERT INTO favourites(user_id, movie_id) VALUES(?, ?);";
 

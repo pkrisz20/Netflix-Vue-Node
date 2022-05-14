@@ -1,9 +1,14 @@
 const getCategories = (moviesRouter, db) => moviesRouter.get("/getcategories", (_req, res) => {
     const sqlSelect = "SELECT category_name FROM categories";
 
-    db.query(sqlSelect, (_err, result) => {
+    db.query(sqlSelect, (err, result) => {
 
-        if (result.length > 0) {
+        if (err) {
+            console.log(err);
+            res.json({ message: "Something went wrong..." });
+        }
+
+        else if (result.length > 0) {
             res.send(result);
         }
 

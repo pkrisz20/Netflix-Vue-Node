@@ -1,19 +1,23 @@
 <template>
     <div class="searchDetailes">
 
-        <button class="searchDetailes-togglebutton"
-            @click="toggleSearchBox"
-            :class="{ opened : openSearchBox }">
-            {{ openSearchBox ? 'Close' : 'Detailed search' }}
-            <i class="fas fa-angle-down"></i>
-        </button>
+        <div class="searchDetailes__buttons">
+            <button class="searchDetailes__buttons-togglebutton"
+                @click="toggleSearchBox"
+                :class="{ opened : openSearchBox }">
+                {{ openSearchBox ? 'Close' : 'Detailed search' }}
+                <i class="fas fa-angle-down"></i>
+            </button>
+
+            <button class="searchDetailes__buttons-clear" @click="clearFiltering" v-if="clearButton > 0">Clear</button>
+        </div>
 
         <transition name="slide">
             <div class="search_box" v-if="openSearchBox">
 
                 <div class="search_box--container">
                     <div class="category" v-for="(item, index) in $store.state.categories" :key="index">
-                        <input type="checkbox" :id="item" :value="item" v-model="$store.state.filteredCategories" />
+                        <input type="checkbox" :id="item" :value="item" v-model="filteredCategories" />
                         <label :for="item">{{ item }}</label>
                     </div>
                 </div>
@@ -21,7 +25,7 @@
                 <div class="release">
                     <div class="release_toggle">
                         <input id="toggle" class="release_toggle-btn" type="checkbox" @change="toggleDateFilter" />
-                        <label for="toggle">Search by release date</label>
+                        <label for="toggle">Release date</label>
                     </div>
 
                     <div class="release_params">
@@ -31,7 +35,7 @@
                             id="from"
                             type="number"
                             class="release_params-input"
-                            v-model="$store.state.filterFromYear"
+                            v-model="filterFromYear"
                         />
 
                         <label for="to" :class="{ enable : !dateDisabled }">To:</label>
@@ -40,49 +44,96 @@
                             id="to"
                             type="number"
                             class="release_params-input"
-                            v-model="$store.state.filterToYear"
+                            v-model="filterToYear"
                         />
                     </div>
                 </div>
 
-                <button class="search_box--submit" @click="executeFiltering">GO</button>
-                <!-- <div>{{filteringCategories}}</div> -->
+                <button class="search_box--submit" @click="executeFiltering">SEARCH</button>
+                <div class="search_box--message" v-if="message">{{ message }}</div>
             </div>
         </transition>
-
-        <!-- <div>Filtered categories: {{ filteringCategories }}</div> -->
     </div>
 </template>
 
 <script>
-// import { mapGetters } from "vuex";
+export default {
+    name: "Filters",
+    data() {
+        return {
+            openSearchBox: false,
+            dateDisabled: true,
+            filteredCategories: [],
+            filterFromYear: null,
+            filterToYear: null,
+            message: ""
+        }
+    },
+    props: { insideOf: String, clearButton: Number },
+    methods: {
+        executeFiltering() {
+            if (!this.dateDisabled) {
+                if (!this.filterFromYear || !this.filterToYear) {
+                    this.message = "Fill each field, if you want to search by date";
+                }
+                else if (this.filterFromYear < 1960) {
+                    this.message = "There are no movies in the database earlier than the '60s";
+                }
+                else if (this.filterToYear > new Date().getFullYear()) {
+                    this.message = `Nowdays it's ${new Date().getFullYear()}, and not ${this.filterToYear}`;
+                }
+            }
 
-    export default {
-        name: "SearchDetails",
-        data() {
-            return {
-                openSearchBox: false,
-                dateDisabled: true,
+            if (this.filteredCategories == 0) {
+                this.message = "Select at least a category";
+            }
+            else {
+                if (this.$props.insideOf == "Favs") {
+                    this.$store.dispatch("filterFavourites", [this.filteredCategories, this.filterFromYear, this.filterToYear]);
+                    
+                    if (this.$store.state.filteredFavs.length > 0 && !this.$store.state.notFound)
+                    {
+                        this.scrollTo('.movies_section');
+                    }
+                }
+                else if (this.$props.insideOf == "All") {
+                    this.$store.dispatch("searchMovies", [this.filteredCategories, this.filterFromYear, this.filterToYear]);
+                    
+                    if (this.$store.state.filteredMovies.length > 0 && !this.$store.state.notFound)
+                    {
+                        this.scrollTo('.movies_section');
+                    }
+                }
             }
         },
-        methods: {
-            executeFiltering() {
-                //execute filtering from vuex getters
-            },
-            toggleSearchBox() {
-                this.openSearchBox = !this.openSearchBox;
-                this.dateDisabled = true;
-                this.$store.state.filterToYear = null;
-                this.$store.state.filterFromYear = null;
-            },
-
-            toggleDateFilter() {
-                this.dateDisabled = !this.dateDisabled;
-                this.$store.state.filterToYear = null;
-                this.$store.state.filterFromYear = null;
-            }
+        toggleSearchBox() {
+            this.openSearchBox = !this.openSearchBox;
+            this.dateDisabled = true;
+            this.filterToYear = null;
+            this.filterFromYear = null;
+            this.filteredCategories = [];
+            this.message = "";
         },
-    }
+
+        toggleDateFilter() {
+            this.dateDisabled = !this.dateDisabled;
+            this.filterToYear = null;
+            this.filterFromYear = null;
+        },
+
+        clearFiltering() {
+            this.$emit("clearFiltering");
+            this.openSearchBox = false;
+        },
+
+        scrollTo(element) {
+            window.scrollTo({
+                behavior: 'smooth',
+                top: document.querySelector(element).getBoundingClientRect().top - document.body.getBoundingClientRect().top - 100
+            });
+        }
+    },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -93,36 +144,57 @@
         flex-direction: column;
     }
 
-    &-togglebutton {
-        @include flexCenter();
-        background-color: $c-green-theme;
-        border: none;
-        width: 230px;
-        height: 48px;
-        border-radius: 3px;
-        cursor: pointer;
-        color: $c-white;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 12px;
-        font-weight: 900;
-        transition: all .3s ease-in-out;
-        position: relative;
-
-        i {
-            position: absolute;
-            top: 14px;
-            right: 15px;
-            transition: transform .3s ease;
-            font-size: 20px;
+    &__buttons {
+        display: flex;
+        
+        &-clear {
+            @include flexCenter();
+            background-color: $c-d;
+            border: none;
+            width: 100px;
+            margin-left: 15px;
+            height: 48px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: $c-black;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 900;
+            transition: all .3s ease-in-out;
         }
-    }
 
-    .opened {
-        background-color: $c-error;
+        &-togglebutton {
+            @include flexCenter();
+            background-color: $c-green-theme;
+            border: none;
+            width: 230px;
+            height: 48px;
+            border-radius: 3px;
+            cursor: pointer;
+            color: $c-white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 900;
+            transition: all .3s ease-in-out;
+            position: relative;
 
-        i {
-            transform: rotate(180deg);
+            i {
+                position: absolute;
+                top: 14px;
+                right: 15px;
+                transition: transform .3s ease;
+                font-size: 20px;
+            }
+        }
+
+        .opened {
+            background-color: $c-error;
+
+            i {
+                transform: rotate(180deg);
+            }
         }
     }
 
@@ -293,6 +365,17 @@
             &:hover {
                 background-color: $c-success;
             }
+        }
+
+        &--message {
+            width: 270px;
+            padding: 10px;
+            font-size: 16px;
+            color: $c-white;
+            background: $c-error;
+            border-radius: 6px;
+            margin: 8px auto 0;
+            pointer-events: none;
         }
     }
 }

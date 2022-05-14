@@ -1,16 +1,17 @@
 <template>
     <div class="favourites">
         <LoadingScreen v-if="httpStatusCode == 0"/>
-        <HeaderUser @openUploadForm="openModal"/>
-        <AddMovieForm ref="modalUploadForm"/>
-        <BlockTitle :title="'My Favourites'" />
+        <HeaderUser />
+        <BlockTitle :title="`My Favourites (${this.$store.getters.favouritesCount})`" />
         
         <div class="favourites-container">
             <div class="wrapper">
-                <Filters v-if="$store.getters.getFavourites != 0" />
+                <Filters :insideOf="'Favs'" @clearFiltering="clearFilter" :clearButton=filteredFavs.length />
             </div>
-            <div class="emptylist" v-if="$store.getters.getFavourites == 0">You haven't added any movie to your favourites list yet.</div>
-            <MovieList :movies=$store.getters.getFavourites />
+            <div class="emptylist" v-if="favourites == 0">You haven't added any movie to your favourites list yet.</div>
+            <MovieList :movies=favourites v-if="favourites != 0 && filteredFavs == 0" />
+            <MovieList :movies=filteredFavs v-if="filteredFavs != 0" />
+            <div class="emptylist" v-if="notFound">Not found any movie like this in your favourites list</div>
         </div>
     </div>
 </template>
@@ -18,29 +19,31 @@
 <script>
 import LoadingScreen from "@/components/global/LoadingScreen.vue";
 import BlockTitle from "@/components/global/BlockTitle.vue";
-import HeaderUser from '@/components/user/HeaderUser.vue';
-import MovieList from '@/components/global/MovieList.vue';
-import AddMovieForm from '@/components/user/AddMovieForm.vue';
+import HeaderUser from "@/components/user/HeaderUser.vue";
+import MovieList from "@/components/global/MovieList.vue";
 import Filters from "@/components/user/Filters.vue";
+import { mapState } from "vuex";
 
 export default {
     name: "Favourites",
     components: {
         HeaderUser,
         MovieList,
-        AddMovieForm,
         Filters,
         LoadingScreen,
         BlockTitle
     },
     computed: {
-        httpStatusCode() {
-            return this.$store.state.httpStatus;
-        }
+        ...mapState({
+            httpStatusCode: state => state.httpStatus,
+            favourites: state => state.favourites,
+            filteredFavs: state => state.filteredFavs,
+            notFound: state => state.notFound
+        })
     },
     methods: {
-        openModal() {
-            this.$refs.modalUploadForm.openModal();
+        clearFilter() {
+            this.$store.state.filteredFavs = [];
         }
     },
     mounted() {
@@ -48,6 +51,7 @@ export default {
         this.$store.dispatch("getLikes");
         this.$store.dispatch("getEachComment");
         this.$store.dispatch("getFavourites");
+        this.$store.dispatch("getMyList");
     }
 }
 </script>

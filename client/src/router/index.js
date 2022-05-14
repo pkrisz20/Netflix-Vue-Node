@@ -46,6 +46,11 @@ const routes = [
     component: () => import("../views/user/Favourites.vue"),
   },
   {
+    path: "/mylist",
+    name: "MyList",
+    component: () => import("../views/user/MyList.vue"),
+  },
+  {
     path: "/detailsuser/:movieId",
     name: "MovieDetailsUser",
     component: () => import("../views/user/MovieDetails.vue"),
@@ -67,11 +72,6 @@ const routes = [
     component: () => import("../views/guest/Movies.vue"),
     props: true
   },
-  // {
-  //   path: "/newandpopular",
-  //   name: "NewAndPopular",
-  //   component: () => import("../views/user/NewAndPopular.vue"),
-  // },
 ];
 
 const router = new VueRouter({

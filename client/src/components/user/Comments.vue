@@ -217,7 +217,7 @@ import { mapState, mapGetters } from "vuex";
             }
         },
         created() {
-            this.$store.dispatch("getLoginStatus");
+            // this.$store.dispatch("getLoginStatus");
             this.$store.dispatch("getComments", this.$props.movieID);
         }
     }

@@ -17,7 +17,7 @@ const getUserData = (usersRouter, db) => usersRouter.get("/getuserdata", verifyJ
         });
     }
 
-    else if (req.session.user.data === undefined || req.session.user.data === '') {
+    else if (!req.session.user.data) {
         res.send({ status: false, message: "Please sign in" });
     }
 });

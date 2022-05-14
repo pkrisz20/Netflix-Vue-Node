@@ -6,29 +6,32 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
-        isLoggedIn: false,
+        isLoggedIn: null,   //it has to be null, unless watch property is not working
         list: [],
         categories: [],
-        filteredCategories: [],
-        filterFromYear: null,
-        filterToYear: null,
         movieDetails: [],
         categoriesDetails: [],
         likes: [],
+        notFound: false,    //if a query is not found any result
         actualUserData: {
             userId: null,
             username: '',
-            email: '',
+            email: "",
             image: null
         },
         comments: [],   //comments of the moviedetails
-        commentsInfo: '',
+        commentsInfo: "",
         eachComment: [],    //comments count for movies list
         reactions: [],
-        successMessage: '', //this contains the success message from profile picture change
-        errorMessage: '',   //this contains the error message from profile picture change
+        successMessage: "", //this contains the success message from profile picture change
+        errorMessage: "",   //this contains the error message from profile picture change
         httpStatus: 0,
         favourites: [],
+        mylist: [],
+        messageFromList: "",
+        filteredFavs: [],    //result of search from favourite movies
+        filteredMovies: [], //result of search from each movie
+        filteredMyList: []  //result of search in my list
     },
     getters: {
         getCommentsCount (state) {
@@ -103,34 +106,28 @@ export const store = new Vuex.Store({
                 return item.movie_id == movie
             }).length;
         },
-        getFavourites (state) {
-            var movieIDs = [];
-            var filteredFavourites = [];
-
-            state.favourites.map(item => {
-                if (item.user_id == state.actualUserData.userId) {
-                    movieIDs.push(item.movie_id);
-                }
-            });
-
-            state.list.filter(item => {
-                movieIDs.forEach(i => {
-                    if (item.id == i) {
-                        filteredFavourites.push(item);
-                    }
-                });
-            });
-            return filteredFavourites;
-        },
         checkIsFavourite (state) {
             return id => {
                 var isFavourite = false;
                 state.favourites.map(item => {
-                    if (id == item.movie_id && item.user_id == state.actualUserData.userId) {
+                    if (id == item.id) {
                         isFavourite = true;
                     }
                 });
                 return isFavourite;
+            }
+        },
+        favouritesCount (state) {
+            return state.favourites.length;
+        },
+        myListCount (state) {
+            return state.mylist.length;
+        },
+        filterMovies (state) {
+            return filter => {
+                return state.list.filter(item => {
+                    return item.movieName.toLowerCase().includes(filter.toLowerCase());
+                });
             }
         }
     },
@@ -271,20 +268,88 @@ export const store = new Vuex.Store({
             state.favourites = [];
             if (!data.status) {
                 console.log(data.message);
-                state.httpStatus = 200;
             }
 
             else if (data.status == null) {
                 state.favourites = [];
-                state.httpStatus = 200;
             }
 
             else if (data.status) {
                 data.result.forEach(i => {
                     state.favourites.push(i);
                 });
-                state.httpStatus = 200;
             }
+            state.httpStatus = 200;
+        },
+        GET_MY_LIST (state, data) {
+            state.mylist = [];
+            if (!data.status) {
+                console.log(data.message);
+            }
+
+            else if (data.status == null) {
+                state.mylist = [];
+            }
+
+            else if (data.status) {
+                data.result.forEach(i => {
+                    state.mylist.push(i);
+                });
+            }
+            state.httpStatus = 200;
+        },
+        ADD_TO_MY_LIST (state, data) {
+            state.messageFromList = data.message;
+            state.httpStatus = 200;
+            
+            setTimeout(() => {
+                state.messageFromList = "";
+            }, 2500);
+        },
+        FILTER_FAVOURITES (state, data) {
+            state.filteredFavs = [];
+            state.httpStatus = 200;
+
+            if (data.status == false) {
+                console.log("error");
+            }
+
+            else if (data.status == null) {
+                state.notFound = true;
+
+                setTimeout(() => {
+                    state.notFound = false;
+                }, 3000);
+            }
+
+            else if (data.status) {
+                data.result.forEach(item => {
+                    state.filteredFavs.push(item);
+                });
+            }
+        },
+        FILTER_EACH (state, data) {
+            state.filteredMovies = [];
+
+            if (data.status == false) {
+                console.log("error");
+            }
+
+            else if (data.status == null) {
+                console.log('null ertek a storeban');
+                state.notFound = true;
+
+                setTimeout(() => {
+                    state.notFound = false;
+                }, 3000);
+            }
+
+            else if (data.status) {
+                data.result.forEach(item => {
+                    state.filteredMovies.push(item);
+                });
+            }
+            state.httpStatus = 200;
         },
     },
 
@@ -435,6 +500,41 @@ export const store = new Vuex.Store({
             await Axios.get(`http://localhost:3000/movies/getfavourites`)
             .then((response) => {
                 commit('GET_FAVOURITES', response.data);
+            });
+        },
+
+        async getMyList ({ commit }) {
+            this.state.mylist = [];
+            this.state.httpStatus = 0;
+            await Axios.get(`http://localhost:3000/movies/getmylist`)
+            .then((response) => {
+                commit('GET_MY_LIST', response.data);
+            });
+        },
+
+        async addToMyList ({ commit }, movieID) {
+            this.state.httpStatus = 0;
+            await Axios.post(`http://localhost:3000/movies/addtolist/${movieID}`)
+            .then((response) => {
+                commit('ADD_TO_MY_LIST', response.data);
+            });
+        },
+
+        async filterFavourites ({ commit }, [categories, fromYear, toYear]) {
+            this.state.httpStatus = 0;
+            this.state.filteredFavs = [];
+            await Axios.post("http://localhost:3000/movies/filter/favs", { selectedCategories: categories, yearFrom: fromYear, yearTo: toYear })
+            .then((response) => {
+                commit('FILTER_FAVOURITES', response.data);
+            });
+        },
+
+        async searchMovies ({ commit }, [categories, fromYear, toYear]) {
+            this.state.httpStatus = 0;
+            this.state.filteredMovies = [];
+            await Axios.post("http://localhost:3000/movies/filter/each", { selectedCategories: categories, yearFrom: fromYear, yearTo: toYear })
+            .then((response) => {
+                commit('FILTER_EACH', response.data);
             });
         },
     }

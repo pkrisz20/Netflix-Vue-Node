@@ -1,6 +1,6 @@
-const getFavourites = (moviesRouter, db) => moviesRouter.get("/getfavourites", (req, res) => {
+const getMyList = (moviesRouter, db) => moviesRouter.get("/getmylist", (req, res) => {
 
-    const sql = "SELECT movies.id, movies.movieName, movies.movieDescription, movies.image, movies.video, movies.releaseDate FROM movies INNER JOIN favourites ON movies.id = favourites.movie_id WHERE favourites.user_id = ?";
+    const sql = "SELECT movies.id, movies.movieName, movies.movieDescription, movies.image, movies.video, movies.releaseDate FROM movies INNER JOIN list ON movies.id = list.movie_id WHERE list.user_id = ?;";
 
     db.query(sql, req.session.user.data[0].user_id, (err, result) => {
         if (err) {
@@ -18,4 +18,4 @@ const getFavourites = (moviesRouter, db) => moviesRouter.get("/getfavourites", (
     });
 });
 
-exports.getFavourites = getFavourites;
+exports.getMyList = getMyList;

@@ -5,9 +5,8 @@ import Axios from "axios";
 import VueAxios from "vue-axios";
 import { store } from "./store";
 
-Vue.use(VueAxios, Axios);
-// Vue.prototype.$http = Axios;
 Vue.config.productionTip = false;
+Vue.use(VueAxios, Axios);
 
 new Vue({
   router,

@@ -24,6 +24,7 @@ const Login = (usersRouter, db) => usersRouter.post("/login", (req, res) => {
                         refresh: refreshToken
                     };
                     console.log('session created');
+                    // console.log(req.session.user);
                     res.json({ status: true });
                 }
                 else {

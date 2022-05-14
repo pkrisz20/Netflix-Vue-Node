@@ -77,8 +77,8 @@ Axios.defaults.withCredentials = true;
                         }
 
                         else if (res.data.status) {
-                            this.$router.push({ name: 'UserInterface'});
                             this.$store.state.isLoggedIn = true;
+                            this.$router.push({ name: 'UserInterface'});
                         }
                     });
                     this.username = '';

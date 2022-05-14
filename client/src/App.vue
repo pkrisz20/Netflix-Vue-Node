@@ -7,6 +7,16 @@
 <script>
 export default {
   name: "App",
+  watch: {
+    '$store.state.isLoggedIn': function() {
+      if (!this.$store.state.isLoggedIn) {
+        this.$router.push("/login").catch(()=>{});
+      }
+      else if (this.$store.state.isLoggedIn) {
+        return;
+      }
+    }
+  }
 }
 </script>
 

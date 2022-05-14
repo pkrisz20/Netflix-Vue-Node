@@ -21,14 +21,27 @@
             </div>
 
             <div class="search-box">
+                
+                <div class="search-box_results" v-if="this.searchText.length > 0">
+                    <h4 class="header">Results: {{ filterMovies(this.searchText).length }}</h4>
+                    <div class="container" v-for="(item, index) in filterMovies(this.searchText)" :key="index">
+                        <router-link class="container_box" :to="{ path: '/detailsguest/' + item.id }">
+                            <div class="container_box--image">
+                                <img class="img" alt="filter picture" :src="require('../../../../server/uploads/movies/' + item.image)" />
+                            </div>
+                            <div class="container_box--title">{{ item.movieName }}</div>
+                            <div class="container_box--date">{{ item.releaseDate }}</div>
+                        </router-link>
+                    </div>
+                </div>
+
                 <form class="search-form">
-                <input ref="searchBox"
-                    class="search-field"
-                    @blur="openSearchBar = false; searchText = ''"
-                    v-model="searchText"
-                    :class="{ open_search : openSearchBar }"
-                    placeholder="Type here to search..." type="text" name="search"
-                />
+                    <input ref="searchBox"
+                        class="search-field"
+                        v-model="searchText"
+                        :class="{ open_search : openSearchBar }"
+                        placeholder="Type here to search..." type="text" name="search"
+                    />
                 </form>
 
                 <!-- SEARCH ICON -->
@@ -58,6 +71,7 @@
 
 <script>
 import Dropdown from '../global/Dropdown.vue';
+import { mapGetters } from "vuex";
 
     export default {
         name: "Header",
@@ -72,6 +86,11 @@ import Dropdown from '../global/Dropdown.vue';
                 searchText: '',
                 openSidebar: false
             }
+        },
+        computed: {
+            ...mapGetters({
+                filterMovies: 'filterMovies'
+            })
         },
         
         methods: {
@@ -329,6 +348,90 @@ import Dropdown from '../global/Dropdown.vue';
                 margin-right: 24px;
             }
 
+            &_results {
+                position: absolute;
+                z-index: 4;
+                transition: .3s ease-in-out;
+                top: 90px;
+                right: 0;
+                background-color: $c-c;
+                width: 400px;
+                max-height: 300px;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                overflow-y: scroll;
+
+                @media #{$r-max-laptop-m} {
+                    top: 60px;
+                }
+
+                @media #{$r-max-mobile-l} {
+                    width: 300px;
+                    right: -20px;
+                }
+
+                .header {
+                    color: $c-3;
+                    text-align: center;
+                }
+
+                .container {
+                    position: relative;
+
+                    &_box {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        height: 70px;
+                        padding: 5px;
+                        margin: 5px 10px;
+                        border-bottom: 1px solid $c-3;
+                        cursor: pointer;
+                        text-decoration: none;
+
+                        @media #{$r-max-mobile-l} {
+                            flex-direction: column;
+                            height: auto;
+                        }
+
+                        &--image {
+                            height: 100%;
+                            width: 120px;
+
+                            @media #{$r-max-mobile-l} {
+                                height: 150px;
+                                width: 250px;
+                            }
+
+                            .img {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                object-position: center;
+                            }
+                        }
+
+                        &--title, &--date {
+                            color: $c-dark-theme;
+                            font-size: 16px;
+                            font-weight: 700;
+
+                            @media #{$r-max-mobile-l} {
+                                margin: 5px 0;
+                            }
+                        }
+
+                        &:hover {
+                            background-color: $c-dark-theme;
+
+                            .container_box--title, .container_box--date {
+                                color: $c-white;
+                            }
+                        }
+                    }
+                }
+            }
+
             .search-form {
                 position: absolute;
                 top: 30px;
@@ -420,6 +523,10 @@ import Dropdown from '../global/Dropdown.vue';
             }
 
             .search-box {
+
+                &_results {
+                    top: 60px;
+                }
 
                 .search-form {
                     top: 15px;

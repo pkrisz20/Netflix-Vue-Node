@@ -1,6 +1,12 @@
 <template>
     <div>
-        <agile :autoplay="true" :autoplaySpeed="4000" :pauseOnHover="false" :slidesToShow="1" :dots="true" :infinite="true">
+        <agile
+            :autoplay="true"
+            :autoplaySpeed="4000"
+            :pauseOnHover="false"
+            :slidesToShow="1"
+            :dots="true"
+            :infinite="true">
 
             <div class="slide">
                 <img alt="witcher" src="../../assets/images/witcher.jpg">
@@ -74,7 +80,6 @@ import { VueAgile } from 'vue-agile';
             border: none;
             color: transparent;
             cursor: pointer;
-            font-size: 35px;
             position: absolute;
             top: 50%;
             transform: translateY(-50%);

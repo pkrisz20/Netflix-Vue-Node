@@ -16,7 +16,8 @@
                         :links="returnCategories"
                         @getSelected="categoriesRoute($event)"
                     />
-                    <router-link class="link" to="/favourites">My Favorites</router-link>
+                    <router-link class="link link-sticker" to="/favourites">My Favorites <span>{{ countFavourites }}</span></router-link>
+                    <router-link class="link link-sticker" to="/mylist">My List <span>{{ countMyList }}</span></router-link>
                     <li class="link logout" @click="logOut">Log Out</li>
                 </ul>
             </div>
@@ -25,11 +26,24 @@
         <!-- SEARCH BOX ON MOBILE VIEW -->
         <div class="search_container_mobile">
             <div class="search-box desktop-hide">
+
+                <div class="search-box_results" v-if="this.searchText.length > 0">
+                    <h4 class="header">Results: {{ filterMovies(this.searchText).length }}</h4>
+                    <div class="container" v-for="(item, index) in filterMovies(this.searchText)" :key="index">
+                        <router-link class="container_box" :to="{ path: '/detailsuser/' + item.id }">
+                            <div class="container_box--image">
+                                <img class="img" alt="filter picture" :src="require('../../../../server/uploads/movies/' + item.image)" />
+                            </div>
+                            <div class="container_box--title">{{ item.movieName }}</div>
+                            <div class="container_box--date">{{ item.releaseDate }}</div>
+                        </router-link>
+                    </div>
+                </div>
+
                 <form class="search-form">
                     <input ref="searchBoxMobile"
                         :class="{ open_search : openSearchBar }"
                         v-model="searchText"
-                        @blur="openSearchBar = false; searchText = ''"
                         class="search-field"
                         placeholder="Type here to search..." type="text" name="search"
                     />
@@ -48,14 +62,26 @@
         </div>
 
         <div class="user-box">
-
             <!-- SEARCH BOX ON DESKTOP VIEW -->
             <div class="search-box mobile-hide">
+
+                <div class="search-box_results" v-if="this.searchText.length > 0">
+                    <h4 class="header">Results: {{ filterMovies(this.searchText).length }}</h4>
+                    <div class="container" v-for="(item, index) in filterMovies(this.searchText)" :key="index">
+                        <router-link class="container_box" :to="{ path: '/detailsuser/' + item.id }">
+                            <div class="container_box--image">
+                                <img class="img" alt="filter picture" :src="require('../../../../server/uploads/movies/' + item.image)" />
+                            </div>
+                            <div class="container_box--title">{{ item.movieName }}</div>
+                            <div class="container_box--date">{{ item.releaseDate }}</div>
+                        </router-link>
+                    </div>
+                </div>
+
                 <form class="search-form">
                     <input ref="searchBox"
                         :class="{ open_search : openSearchBar }"
                         v-model="searchText"
-                        @blur="openSearchBar = false; searchText = ''"
                         class="search-field"
                         placeholder="Type here to search..." type="text" name="search"
                     />
@@ -183,7 +209,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import Dropdown from '../global/Dropdown.vue';
 import Axios from 'axios';
 Axios.defaults.withCredentials = true;
@@ -198,7 +224,7 @@ Axios.defaults.withCredentials = true;
                 openSearchBar: false,
                 IsOpenNotification: false,
                 isOpenOptions: false,
-                searchText: '',
+                searchText: "",
                 openSidebar: false,
                 actualWidth: 0,
                 scrollPosition: null
@@ -210,9 +236,14 @@ Axios.defaults.withCredentials = true;
                 returnUserProfile: state => state.actualUserData.image,
                 returnCategories: state => state.categories,
             }),
+            ...mapGetters({
+                filterMovies: 'filterMovies',
+                countFavourites: 'favouritesCount',
+                countMyList: 'myListCount'
+            }),
             getImagePath () {
                 return require('../../../../server/uploads/profiles/' + this.returnUserProfile);
-            }
+            },
         },
         // return the actual width of the window
         created() {
@@ -221,7 +252,6 @@ Axios.defaults.withCredentials = true;
         destroyed() {
             window.removeEventListener("resize", this.onResize);
         },
-
         methods: {
             onResize() {
                 this.actualWidth = window.innerWidth;
@@ -313,9 +343,10 @@ Axios.defaults.withCredentials = true;
                 }
             });
 
+            this.$store.dispatch('getLoginStatus');
             this.$store.dispatch('getCategories');
             this.$store.dispatch('getActualUserData');
-        },
+        }
     }
 </script>
 
@@ -415,6 +446,24 @@ Axios.defaults.withCredentials = true;
                         transition: .3s;
                         font-size: 14px;
                         cursor: pointer;
+
+                        &-sticker {
+                            position: relative;
+
+                            span {
+                                position: absolute;
+                                right: -22px;
+                                bottom: -5px;
+                                background-color: $c-red;
+                                color: $c-white;
+                                font-size: 12px;
+                                padding: 5px;
+                                width: 10px;
+                                height: 10px;
+                                border-radius: 50%;
+                                @include flexCenter();
+                            }
+                        }
 
                         @media #{$r-max-laptop-s} {
                             margin: 15px 0;
@@ -833,6 +882,92 @@ Axios.defaults.withCredentials = true;
             &.desktop-hide {
                 @media #{$r-laptop-s} {
                     display: none;
+                }
+            }
+
+            &_results {
+                position: absolute;
+                z-index: 5;
+                top: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: $c-c;
+                width: 400px;
+                max-height: 300px;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                overflow-y: scroll;
+
+                @media #{$r-max-laptop-s} {
+                    top: 30px;
+                    left: -380px;
+                    transform: translateX(0);
+                }
+
+                @media #{$r-max-mobile-l} {
+                    width: 300px;
+                    left: -265px;
+                }
+
+                .header {
+                    color: $c-3;
+                    text-align: center;
+                }
+
+                .container {
+                    position: relative;
+
+                    &_box {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        height: 70px;
+                        padding: 5px;
+                        margin: 5px 10px;
+                        border-bottom: 1px solid $c-3;
+                        cursor: pointer;
+                        text-decoration: none;
+
+                        @media #{$r-max-mobile-l} {
+                            flex-direction: column;
+                            height: auto;
+                        }
+
+                        &--image {
+                            height: 100%;
+                            width: 120px;
+
+                            @media #{$r-max-mobile-l} {
+                                height: 150px;
+                                width: 250px;
+                            }
+
+                            .img {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                object-position: center;
+                            }
+                        }
+
+                        &--title, &--date {
+                            color: $c-dark-theme;
+                            font-size: 16px;
+                            font-weight: 700;
+
+                            @media #{$r-max-mobile-l} {
+                                margin: 5px 0;
+                            }
+                        }
+
+                        &:hover {
+                            background-color: $c-dark-theme;
+
+                            .container_box--title, .container_box--date {
+                                color: $c-white;
+                            }
+                        }
+                    }
                 }
             }
             

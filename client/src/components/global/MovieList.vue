@@ -1,6 +1,6 @@
 <template>
     <div class="movies_section">
-        <div class="error" v-if="errorMessage">{{ errorMessage }}</div>
+        <div class="error" v-if="message">{{ message }}</div>
         
         <div class="wrapper">
             <div class="listCards">
@@ -51,7 +51,7 @@ export default {
     },
     data() {
         return {
-            errorMessage: ''
+            message: ''
         }
     },
     computed: {
@@ -82,10 +82,20 @@ export default {
             await Axios.post(`http://localhost:3000/movies/addfavourite/${movie}`)
             .then((response) => {
                 if (response.data.status) {
-                    this.favouriteSuccess = response.data.message;
+                    this.message = response.data.message;
+                    this.$store.dispatch("getFavourites");
+
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 2500);
                 }
                 else if (!response.data.status) {
-                    this.favouriteSuccess = response.data.message;
+                    this.message = response.data.message;
+                    this.$store.dispatch("getFavourites");
+
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 2500);
                 }
             });
         },
@@ -93,10 +103,20 @@ export default {
             await Axios.delete(`http://localhost:3000/movies/removefavourite/${movie}`)
             .then((response) => {
                 if (response.data.status) {
-                    this.favouriteSuccess = response.data.message;
+                    this.message = response.data.message;
+                    this.$store.dispatch("getFavourites");
+
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 2500);
                 }
                 else if (!response.data.status) {
-                    this.favouriteSuccess = response.data.message;
+                    this.message = response.data.message;
+                    this.$store.dispatch("getFavourites");
+
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 2500);
                 }
             });
         },
@@ -134,6 +154,11 @@ export default {
         @media #{$r-max-mobile-l} {
             @include flexCenter();
         }
+
+        @media #{$r-max-mobile-s} {
+            padding: 0 30px;
+            width: calc(100% - 60px);
+        }
     }
 }
 
@@ -147,6 +172,8 @@ export default {
 
     @media #{$r-max-laptop-s} {
         grid-template-columns: repeat(2, 1fr);
+        max-width: 750px;
+        margin: 0 auto;
     }
 
     @media #{$r-max-mobile-l} {

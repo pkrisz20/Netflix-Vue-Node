@@ -113,9 +113,6 @@
                         <input class="data-submit" type="submit" value="save"/>
                     </form>
                 </div>
-
-                <BlockTitle :title="'Your List'" />
-                <MovieList />
             </div>
         </div>
     </div>
@@ -124,7 +121,6 @@
 <script>
 import BlockTitle from "@/components/global/BlockTitle.vue";
 import HeaderUser from '@/components/user/HeaderUser.vue';
-import MovieList from '@/components/global/MovieList.vue';
 import Axios from "axios";
 import { mapState } from "vuex";
 
@@ -132,7 +128,6 @@ export default {
     name: "Profile",
     components: {
         HeaderUser,
-        MovieList,
         BlockTitle
     },
     data() {
@@ -153,7 +148,10 @@ export default {
             successPassword: '',
         }
     },
-
+    mounted() {
+        this.$store.dispatch("getFavourites");
+        this.$store.dispatch("getMyList");
+    },
     computed: {
         ...mapState({
             returnUsername: state => state.actualUserData.username,
@@ -166,7 +164,6 @@ export default {
             return require('../../../../server/uploads/profiles/' + this.returnUserProfile);
         }
     },
-
     methods: {
         //handle profile picture upload
         handleUploadProfile (e) {
@@ -324,6 +321,7 @@ export default {
 <style lang="scss">
 .profile {
     background-color: $c-dark-blue;
+    min-height: 100vh;
 
     .wrapper {
 

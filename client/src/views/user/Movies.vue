@@ -15,37 +15,39 @@ import HeaderUser from "@/components/user/HeaderUser.vue";
 import MovieList from "@/components/global/MovieList.vue";
 import Axios from "axios";
 
-    export default {
-        name: "MoviesUser",
-        data() {
-            return {
-                requestStatus: 0,
-                moviesByCategory: [],
-                notFound: false,
-                categoryParam: this.$route.params.category,
-            }
-        },
-        props: { category: String },
-        components: {
-            HeaderUser,
-            LoadingScreen,
-            MovieList,
-            BlockTitle
-        },
-        created() {
-            Axios.get(`http://localhost:3000/movies/getbycategory/${this.categoryParam}`)
-            .then((response) => {
-                if (!response.data.status) {
-                    this.notFound = true;
-                }
-
-                else if (response.data.status) {
-                    this.moviesByCategory = response.data.result;
-                }
-                this.requestStatus = 200;
-            });
+export default {
+    name: "MoviesUser",
+    data() {
+        return {
+            requestStatus: 0,
+            moviesByCategory: [],
+            notFound: false,
+            categoryParam: this.$route.params.category,
         }
+    },
+    props: { category: String },
+    components: {
+        HeaderUser,
+        LoadingScreen,
+        MovieList,
+        BlockTitle
+    },
+    created() {
+        Axios.get(`http://localhost:3000/movies/getbycategory/${this.categoryParam}`)
+        .then((response) => {
+            if (!response.data.status) {
+                this.notFound = true;
+            }
+
+            else if (response.data.status) {
+                this.moviesByCategory = response.data.result;
+            }
+            this.requestStatus = 200;
+        });
+        this.$store.dispatch("getFavourites");
+        this.$store.dispatch("getMyList");
     }
+}
 </script>
 
 <style lang="scss" scoped>

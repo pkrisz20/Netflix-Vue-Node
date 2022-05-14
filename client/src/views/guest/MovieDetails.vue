@@ -31,6 +31,7 @@
 import Header from "@/components/guest/Header.vue";
 import Comments from "@/components/user/Comments.vue";
 import LoadingScreen from "@/components/global/LoadingScreen.vue";
+import { mapState } from "vuex";
 
     export default {
         name: "Moviedetails",
@@ -53,17 +54,14 @@ import LoadingScreen from "@/components/global/LoadingScreen.vue";
             },
         },
         computed: {
-            getMovieDetails() {
-                return this.$store.state.movieDetails;
-            },
-            getCategories() {
-                return this.$store.state.categoriesDetails;
-            },
-            httpStatusCode() {
-                return this.$store.state.httpStatus;
-            }
+            ...mapState({
+                getMovieDetails: state => state.movieDetails,
+                getCategories: state => state.categoriesDetails,
+                httpStatusCode: state => state.httpStatus
+            })
         },
         created() {
+            // this.$store.dispatch("getLoginStatus");
             this.$store.dispatch("getMovieDetails", this.movieId);
             setTimeout(() => {
                 this.scrollToTop();

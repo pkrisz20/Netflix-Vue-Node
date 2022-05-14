@@ -7,6 +7,7 @@
             <img class="cover-image" alt="background" :src="getImagePath(item.image)">
 
             <div class="fav-success" v-if="favouriteSuccess">{{ favouriteSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
+            <div class="fav-success" v-if="successMyList">{{ successMyList }}</div>
 
             <div class="movie-details">
                 <h1 class="movie-title">{{ item.movieName }}</h1>
@@ -25,7 +26,7 @@
 
                 <div class="btns">
                     <button class="btn watch"><i class="fas fa-play"></i> WATCH</button>
-                    <button class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
+                    <button @click="addToList()" class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
                     <button @click="addFavourite(item.id)" class="btns-favourite"><i class="fas fa-heart"></i></button>
 
                     <button @click="addLike()" class="btns_likes like" :class="{ movieliked: isLiked(item.id) }">
@@ -106,6 +107,9 @@ import { mapState, mapGetters } from "vuex";
                     }
                 }
             },
+            addToList() {
+                this.$store.dispatch("addToMyList", this.movieId);
+            },
             async addFavourite(movie) {
                 // this.$store.dispatch("addFavourite", this.movieId);
                 await Axios.post(`http://localhost:3000/movies/addfavourite/${movie}`)
@@ -117,13 +121,14 @@ import { mapState, mapGetters } from "vuex";
                         this.favouriteSuccess = response.data.message;
                     }
                 });
-            }
+            },
         },
         computed: {
             ...mapState({
                 getMovieDetails: state => state.movieDetails,
                 getCategories: state => state.categoriesDetails,
                 httpStatusCode: state => state.httpStatus,
+                successMyList: state => state.messageFromList
             }),
             ...mapGetters({
                 isLiked: 'isLikedMovie',
@@ -133,6 +138,8 @@ import { mapState, mapGetters } from "vuex";
         created() {
             this.$store.dispatch("getMovieDetails", this.movieId);
             this.$store.dispatch("getLikes");
+            this.$store.dispatch("getFavourites");
+            this.$store.dispatch("getMyList");
             setTimeout(() => {
                 this.scrollToTop();
             }, 150);
