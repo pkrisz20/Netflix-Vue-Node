@@ -36,7 +36,7 @@ app.use(session({
 //Routes
 const { moviesRouter } = require("./routes/movies");
 const { usersRouter } = require("./routes/users");
-const { adminRouter } = require("./routes/admin.js");
+const { adminRouter } = require("./routes/admin");
 app.use("/movies", moviesRouter);
 app.use("/users", usersRouter);
 app.use("/admin", adminRouter);

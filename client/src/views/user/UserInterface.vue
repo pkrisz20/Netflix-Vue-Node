@@ -4,29 +4,35 @@
         <HeaderUser />
         <HeroUser />
         
-        <BlockTitle class="first" :title="'Top Movies Now'" />
-        <MovieCarousel />
+        <div class="main_sliders">
+            <BlockTitle class="first" :title="'Top Movies'" />
+            <MovieCarousel />
 
-        <BlockTitle class="left-side" :title="'Most Liked Movies'" />
-        <MovieCarousel />
+            <BlockTitle class="left-side" :title="'Horrors and Thrillers'" />
+            <MovieCarousel />
 
-        <BlockTitle class="left-side" :title="'Top 10'" />
-        <MovieCarousel />
+            <BlockTitle class="left-side" :title="'Sci-Fi and Fantasy'" />
+            <MovieCarousel />
 
-        <div class="wrapper">
-            <BlockTitle :title="'Each category'" />
-            <Filters :insideOf="'All'" @clearFiltering="clearFilter" :clearButton=filteredMovies.length />
-            <div class="emptylist" v-if="notFound">Not found any movie like this</div>
+            <BlockTitle class="left-side" :title="'Based on True Story'" />
+            <MovieCarousel />
+
+            <div class="wrapper">
+                <BlockTitle :title="'All categories'" />
+                <Filters :insideOf="'All'" @clearFiltering="clearFilter" :clearButton=filteredMovies.length />
+                <div class="emptylist" v-if="notFound">Not found any movie like this</div>
+            </div>
         </div>
 
         <MovieList :movies=list v-if="list != 0 && filteredMovies == 0" />
         <MovieList :movies=filteredMovies v-if="filteredMovies != 0" />
-        <!-- <Footer /> -->
+        <Footer />
     </div>
 </template>
 
 <script>
 import LoadingScreen from "@/components/global/LoadingScreen.vue";
+import Footer from "@/components/global/Footer.vue";
 import BlockTitle from "@/components/global/BlockTitle.vue";
 import HeaderUser from "@/components/user/HeaderUser.vue";
 import HeroUser from "@/components/user/HeroUser.vue";
@@ -34,7 +40,6 @@ import MovieCarousel from "@/components/user/MoviesCarousel.vue";
 import MovieList from "@/components/global/MovieList.vue";
 import Filters from "@/components/user/Filters.vue";
 import { mapState } from "vuex";
-// import Footer from "@/components/global/Footer.vue";
 
     export default {
         name: "Userinterface",
@@ -45,8 +50,8 @@ import { mapState } from "vuex";
             BlockTitle,
             LoadingScreen,
             MovieList,
-            Filters
-            // Footer
+            Filters,
+            Footer
         },
         computed: {
             ...mapState({
@@ -76,7 +81,11 @@ import { mapState } from "vuex";
 .userinterface {
     background-color: $c-dark-theme;
     position: relative;
-    z-index: 6;
+    z-index: 0;
+
+    .main_sliders {
+        background-color: $c-dark-theme;    //because of the footer
+    }
 
     .first {
         justify-content: flex-start;

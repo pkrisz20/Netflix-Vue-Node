@@ -1,13 +1,14 @@
 import Axios from "axios";
 import Vue from "vue";
 import Vuex from "vuex";
-
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
         isLoggedIn: null,   //it has to be null, unless watch property is not working
+        adminLoggedIn: null,    //it has to be null, unless watch property is not working
         list: [],
+        movieToUpdate: null,    //movieID which is being updated by open update form
         categories: [],
         movieDetails: [],
         categoriesDetails: [],
@@ -31,7 +32,7 @@ export const store = new Vuex.Store({
         messageFromList: "",
         filteredFavs: [],    //result of search from favourite movies
         filteredMovies: [], //result of search from each movie
-        filteredMyList: []  //result of search in my list
+        filteredMyList: []  //result of search from my list
     },
     getters: {
         getCommentsCount (state) {
@@ -129,8 +130,25 @@ export const store = new Vuex.Store({
                     return item.movieName.toLowerCase().includes(filter.toLowerCase());
                 });
             }
+        },
+        getMovieByID (state) {
+            return state.list.filter(movie => {
+                return movie.id == state.movieToUpdate
+            });
+        },
+        isOnMyList (state) {
+            return id => {
+                var isOnTheList = false;
+                state.mylist.map(item => {
+                    if (id == item.id) {
+                        isOnTheList = true;
+                    }
+                });
+                return isOnTheList;
+            }
         }
     },
+
     mutations: {
         GET_ALL_MOVIES (state, data) {
             if (!data.status) {
@@ -168,6 +186,17 @@ export const store = new Vuex.Store({
                 state.httpStatus = 200;
             }
         },
+        GET_ADMIN_DATA (state, response) {
+            if (!response.data.status) {
+                state.adminLoggedIn = false;
+            }
+
+            else if (response.data.status) {
+                state.actualUserData.userId = response.data.result[0].user_id;
+                state.actualUserData.username = response.data.result[0].username;
+                state.httpStatus = 200;
+            }
+        },
         CHANGE_PROFILE_PICTURE (state, data) {
             if (data.status) {
                 state.successMessage = data.message;
@@ -186,6 +215,12 @@ export const store = new Vuex.Store({
                 state.actualUserData.image = null;
             }
         },
+        ADMIN_LOG_OUT (state, data) {
+            if (data.status) {
+                state.adminLoggedIn = false;
+                state.actualUserData.username = "";
+            }
+        },
         CANCEL_MESSAGES (state) {
             state.successMessage = "";
             state.errorMessage = "";
@@ -197,6 +232,15 @@ export const store = new Vuex.Store({
 
             else if (!data.loginStatus) {
                 state.isLoggedIn = false;
+            }
+        },
+        SET_ADMIN_STATUS (state, data) {
+            if (data.adminStatus) {
+                state.adminLoggedIn = true;
+            }
+
+            else if (!data.adminStatus) {
+                state.adminLoggedIn = false;
             }
         },
         GET_COMMENTS (state, data) {
@@ -306,9 +350,16 @@ export const store = new Vuex.Store({
                 state.messageFromList = "";
             }, 2500);
         },
+        DELETE_MY_LIST (state, data) {
+            state.messageFromList = data.message;
+            state.httpStatus = 200;
+            
+            setTimeout(() => {
+                state.messageFromList = "";
+            }, 2500);
+        },
         FILTER_FAVOURITES (state, data) {
             state.filteredFavs = [];
-            state.httpStatus = 200;
 
             if (data.status == false) {
                 console.log("error");
@@ -327,6 +378,7 @@ export const store = new Vuex.Store({
                     state.filteredFavs.push(item);
                 });
             }
+            state.httpStatus = 200;
         },
         FILTER_EACH (state, data) {
             state.filteredMovies = [];
@@ -351,6 +403,43 @@ export const store = new Vuex.Store({
             }
             state.httpStatus = 200;
         },
+        FILTER_MY_LIST (state, data) {
+            state.filteredMyList = [];
+
+            if (data.status == false) {
+                console.log("error");
+            }
+
+            else if (data.status == null) {
+                console.log('null ertek a storeban');
+                state.notFound = true;
+
+                setTimeout(() => {
+                    state.notFound = false;
+                }, 3000);
+            }
+
+            else if (data.status) {
+                data.result.forEach(item => {
+                    state.filteredMyList.push(item);
+                });
+            }
+            state.httpStatus = 200;
+        },
+        DELETE_MOVIE (state, data) {
+            state.httpStatus = 200;
+
+            if (data.status) {
+                state.successMessage = data.message;
+            }
+            else if (!data.status) {
+                state.errorMessage = data.message;
+            }
+            setTimeout(() => {
+                state.successMessage = "";
+                state.errorMessage = "";
+            }, 2500);
+        }
     },
 
     actions: {
@@ -384,6 +473,14 @@ export const store = new Vuex.Store({
             });
         },
 
+        async getAdminData ({ commit }) {
+            this.state.httpStatus = 0;
+            await Axios.get("http://localhost:3000/admin/getdata")
+            .then((response) => {
+                commit('GET_ADMIN_DATA', response);
+            });
+        },
+
         async updateProfilePicture ({ commit }, newProfilePicture) {
             const data = new FormData();
             data.append("image", newProfilePicture);
@@ -405,10 +502,24 @@ export const store = new Vuex.Store({
             });
         },
 
+        async logOutAdmin ({ commit }) {
+            await Axios.put("http://localhost:3000/admin/logout")
+            .then((response) => {
+                commit('ADMIN_LOG_OUT', response.data);
+            });
+        },
+
         async getLoginStatus ({ commit }) {
             await Axios.get("http://localhost:3000/users/getloginstatus")
             .then((response) => {
                 commit('SET_LOGIN_STATUS', response.data);
+            });
+        },
+
+        async getAdminStatus ({ commit }) {
+            await Axios.get("http://localhost:3000/admin/getadminstatus")
+            .then((response) => {
+                commit('SET_ADMIN_STATUS', response.data);
             });
         },
 
@@ -512,11 +623,21 @@ export const store = new Vuex.Store({
             });
         },
 
-        async addToMyList ({ commit }, movieID) {
+        async addToMyList ({ commit, dispatch }, movieID) {
             this.state.httpStatus = 0;
             await Axios.post(`http://localhost:3000/movies/addtolist/${movieID}`)
             .then((response) => {
+                dispatch("getMyList");
                 commit('ADD_TO_MY_LIST', response.data);
+            });
+        },
+
+        async deleteFromMyList ({ commit, dispatch }, movieID) {
+            this.state.httpStatus = 0;
+            await Axios.delete(`http://localhost:3000/movies/deletefromlist/${movieID}`)
+            .then((response) => {
+                dispatch("getMyList");
+                commit('DELETE_MY_LIST', response.data);
             });
         },
 
@@ -535,6 +656,24 @@ export const store = new Vuex.Store({
             await Axios.post("http://localhost:3000/movies/filter/each", { selectedCategories: categories, yearFrom: fromYear, yearTo: toYear })
             .then((response) => {
                 commit('FILTER_EACH', response.data);
+            });
+        },
+
+        async filterMyList ({ commit }, [categories, fromYear, toYear]) {
+            this.state.httpStatus = 0;
+            this.state.filteredMyList = [];
+            await Axios.post("http://localhost:3000/movies/filter/mylist", { selectedCategories: categories, yearFrom: fromYear, yearTo: toYear })
+            .then((response) => {
+                commit('FILTER_MY_LIST', response.data);
+            });
+        },
+
+        async deleteMovie ({ commit, dispatch }, movieID) {
+            this.state.httpStatus = 0;
+            await Axios.delete(`http://localhost:3000/admin/deletemovie/${movieID}`)
+            .then((response) => {
+                dispatch("getAllMovies");
+                commit('DELETE_MOVIE', response.data);
             });
         },
     }

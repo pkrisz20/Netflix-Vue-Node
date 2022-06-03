@@ -1,48 +1,50 @@
 <template>
-<div>
-    <LoadingScreen v-if="httpStatusCode == 0" />
-    <HeaderUser />
-    <div class="bg-linear">
-        <div class="container" v-for="item in getMovieDetails" :key="item.id">
-            <img class="cover-image" alt="background" :src="getImagePath(item.image)">
+    <div>
+        <LoadingScreen v-if="httpStatusCode == 0" />
+        <HeaderUser />
+        <div class="bg-linear">
+            <div class="container" v-for="item in getMovieDetails" :key="item.id">
+                <img class="cover-image" alt="background" :src="getImagePath(item.image)">
 
-            <div class="fav-success" v-if="favouriteSuccess">{{ favouriteSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
-            <div class="fav-success" v-if="successMyList">{{ successMyList }}</div>
+                <div class="fav-success" v-if="favouriteSuccess">{{ favouriteSuccess }} <i @click="closeMessage" class="fas fa-times"></i></div>
+                <div class="fav-success" v-if="successMyList">{{ successMyList }}</div>
 
-            <div class="movie-details">
-                <h1 class="movie-title">{{ item.movieName }}</h1>
-                <div class="movie-info-box">
+                <div class="movie-details">
+                    <h1 class="movie-title">{{ item.movieName }}</h1>
+                    <div class="movie-info-box">
 
-                    <!-- <div class="info"><i class="far fa-hourglass-half"></i> Duration: {{ movieDuration }}</div> -->
+                        <!-- <div class="info"><i class="far fa-hourglass-half"></i> Duration: {{ movieDuration }}</div> -->
 
-                    <div class="info"><i class="far fa-calendar-star"></i> Release: {{ item.releaseDate }}</div>
+                        <div class="info"><i class="far fa-calendar-star"></i> Release: {{ item.releaseDate }}</div>
 
-                    <div class="info"><i class="fas fa-film-alt"></i> Category:
-                        <span v-for="category in getCategories" :key="category">{{ category }}</span>
+                        <div class="info"><i class="fas fa-film-alt"></i> Category:
+                            <span v-for="category in getCategories" :key="category">{{ category }}</span>
+                        </div>
+                    </div>
+
+                    <p class="movie-desc">{{ item.movieDescription }}</p>
+
+                    <div class="btns">
+                        <button class="btn watch"><i class="fas fa-play"></i> WATCH</button>
+                        <button v-if="!isOnMyList(item.id)" @click="addToList()" class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
+                        <button v-else-if="isOnMyList(item.id)" @click="removeMyList()" class="btn add"><i class="fas fa-times"></i> REMOVE FROM LIST</button>
+
+                        <button @click="addFavourite(item.id)" class="btns-favourite"><i class="fas fa-heart"></i></button>
+
+                        <button @click="addLike()" class="btns_likes like" :class="{ movieliked: isLiked(item.id) }">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 489.543 489.543" xml:space="preserve"><path d="M270.024 0c-22.6 0-15 48.3-15 48.3s-48.3 133.2-94.5 168.7c-9.9 10.4-16.1 21.9-20 31.3-.9 2.3-1.7 4.5-2.4 6.5-3.1 6.3-9.7 16-23.8 24.5l46.2 200.9s71.5 9.3 143.2 7.8c28.7 2.3 59.1 2.5 83.3-2.7 82.2-17.5 61.6-74.8 61.6-74.8 44.3-33.3 19.1-74.9 19.1-74.9 39.4-41.1.7-75.6.7-75.6s21.3-33.2-6.2-58.3c-34.3-31.4-127.4-10.5-127.4-10.5-6.5 1.1-13.4 2.5-20.8 4.3 0 0-32.2 15 0-82.7 32.3-97.7-21.4-112.8-44-112.8zM127.324 465.7l-35-166.3c-2-9.5-11.6-17.3-21.3-17.3h-66.8l-.1 200.8h109.1c9.8.1 16.1-7.7 14.1-17.2z"/></svg>
+                            Like
+                        </button>
+                        <button @click="addDislike()" class="btns_likes dislike" :class="{ moviedisliked: isDisliked(item.id) }">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xml:space="preserve"><path d="M117.333 10.667h-64C23.936 10.667 0 34.603 0 64v170.667C0 264.064 23.936 288 53.333 288H160c5.888 0 10.667-4.779 10.667-10.667V64c0-29.397-23.936-53.333-53.334-53.333zM512 208c0-18.496-10.603-34.731-26.347-42.667 3.285-6.549 5.013-13.781 5.013-21.333 0-18.496-10.603-34.752-26.368-42.688 4.864-9.728 6.293-20.928 3.84-32.043C463.36 47.68 443.051 32 419.819 32H224c-7.232 0-16.405 1.173-25.771 3.285-5.739 1.301-9.344 6.976-8.064 12.693C191.403 53.632 192 58.859 192 64v213.333c0 5.739-1.6 11.264-4.736 16.448a10.623 10.623 0 0 0-.555 9.984l47.957 103.893v72.32a10.75 10.75 0 0 0 3.989 8.341c.683.555 16.512 13.013 38.677 13.013 24.683 0 64-39.061 64-85.333 0-29.184-10.453-65.515-16.96-85.333h131.755c28.715 0 53.141-21.248 55.637-48.341 1.387-15.189-3.669-29.824-13.632-40.725C506.901 232.768 512 220.821 512 208z"/></svg>
+                            Dislike
+                        </button>
                     </div>
                 </div>
-
-                <p class="movie-desc">{{ item.movieDescription }}</p>
-
-                <div class="btns">
-                    <button class="btn watch"><i class="fas fa-play"></i> WATCH</button>
-                    <button @click="addToList()" class="btn add"><i class="fas fa-plus"></i> WATCH LATER</button>
-                    <button @click="addFavourite(item.id)" class="btns-favourite"><i class="fas fa-heart"></i></button>
-
-                    <button @click="addLike()" class="btns_likes like" :class="{ movieliked: isLiked(item.id) }">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 489.543 489.543" xml:space="preserve"><path d="M270.024 0c-22.6 0-15 48.3-15 48.3s-48.3 133.2-94.5 168.7c-9.9 10.4-16.1 21.9-20 31.3-.9 2.3-1.7 4.5-2.4 6.5-3.1 6.3-9.7 16-23.8 24.5l46.2 200.9s71.5 9.3 143.2 7.8c28.7 2.3 59.1 2.5 83.3-2.7 82.2-17.5 61.6-74.8 61.6-74.8 44.3-33.3 19.1-74.9 19.1-74.9 39.4-41.1.7-75.6.7-75.6s21.3-33.2-6.2-58.3c-34.3-31.4-127.4-10.5-127.4-10.5-6.5 1.1-13.4 2.5-20.8 4.3 0 0-32.2 15 0-82.7 32.3-97.7-21.4-112.8-44-112.8zM127.324 465.7l-35-166.3c-2-9.5-11.6-17.3-21.3-17.3h-66.8l-.1 200.8h109.1c9.8.1 16.1-7.7 14.1-17.2z"/></svg>
-                        Like
-                    </button>
-                    <button @click="addDislike()" class="btns_likes dislike" :class="{ moviedisliked: isDisliked(item.id) }">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" xml:space="preserve"><path d="M117.333 10.667h-64C23.936 10.667 0 34.603 0 64v170.667C0 264.064 23.936 288 53.333 288H160c5.888 0 10.667-4.779 10.667-10.667V64c0-29.397-23.936-53.333-53.334-53.333zM512 208c0-18.496-10.603-34.731-26.347-42.667 3.285-6.549 5.013-13.781 5.013-21.333 0-18.496-10.603-34.752-26.368-42.688 4.864-9.728 6.293-20.928 3.84-32.043C463.36 47.68 443.051 32 419.819 32H224c-7.232 0-16.405 1.173-25.771 3.285-5.739 1.301-9.344 6.976-8.064 12.693C191.403 53.632 192 58.859 192 64v213.333c0 5.739-1.6 11.264-4.736 16.448a10.623 10.623 0 0 0-.555 9.984l47.957 103.893v72.32a10.75 10.75 0 0 0 3.989 8.341c.683.555 16.512 13.013 38.677 13.013 24.683 0 64-39.061 64-85.333 0-29.184-10.453-65.515-16.96-85.333h131.755c28.715 0 53.141-21.248 55.637-48.341 1.387-15.189-3.669-29.824-13.632-40.725C506.901 232.768 512 220.821 512 208z"/></svg>
-                        Dislike
-                    </button>
-                </div>
             </div>
+            <Comments :movieID=this.movieId />
         </div>
-        <Comments :movieID=this.movieId />
     </div>
-</div>
 </template>
 
 <script>
@@ -62,7 +64,7 @@ import { mapState, mapGetters } from "vuex";
         data() {
             return {
                 movieId: this.$route.params.movieId,
-                favouriteSuccess: ''
+                favouriteSuccess: '',
             }
         },
         methods: {
@@ -110,6 +112,9 @@ import { mapState, mapGetters } from "vuex";
             addToList() {
                 this.$store.dispatch("addToMyList", this.movieId);
             },
+            removeMyList() {
+                this.$store.dispatch("deleteFromMyList", this.movieId);
+            },
             async addFavourite(movie) {
                 // this.$store.dispatch("addFavourite", this.movieId);
                 await Axios.post(`http://localhost:3000/movies/addfavourite/${movie}`)
@@ -132,7 +137,8 @@ import { mapState, mapGetters } from "vuex";
             }),
             ...mapGetters({
                 isLiked: 'isLikedMovie',
-                isDisliked: 'isDislikedMovie'
+                isDisliked: 'isDislikedMovie',
+                isOnMyList: 'isOnMyList'
             })
         },
         created() {

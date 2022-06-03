@@ -1,11 +1,16 @@
 const bcrypt = require("bcrypt");
 const { createToken, createRefreshToken } = require('../JWT');
 
-const Login = (usersRouter, db) => usersRouter.post("/login", (req, res) => {
+const adminLogin = (adminRouter, db) => adminRouter.post("/login", (req, res) => {
     const { username, pass } = req.body;
-    db.query("SELECT * FROM users WHERE (username = ? AND is_admin = ?)", [username, 0], (err, result) => {
+    
+    db.query("SELECT * FROM users WHERE (username = ? AND is_admin = ?)", [username, 1], (err, result) => {
         if (err) {
             res.send({ status: false, message: err });
+        }
+
+        if (result.length == 0) {
+            res.send({ status: false, message: "You don't have admin permission" });
         }
 
         if (result.length > 0) {
@@ -15,7 +20,7 @@ const Login = (usersRouter, db) => usersRouter.post("/login", (req, res) => {
                 }
 
                 if (response) {
-                    console.log('creating tokens');
+                    console.log('creating tokens for admin');
                     const accessToken = createToken(result[0].user_id);
                     const refreshToken = createRefreshToken(result[0].user_id);
                     req.session.user = {
@@ -23,7 +28,7 @@ const Login = (usersRouter, db) => usersRouter.post("/login", (req, res) => {
                         token: accessToken,
                         refresh: refreshToken
                     };
-                    console.log('session created');
+                    console.log('session for admin created');
                     res.json({ status: true });
                 }
                 else {
@@ -38,4 +43,4 @@ const Login = (usersRouter, db) => usersRouter.post("/login", (req, res) => {
     });
 });
 
-exports.Login = Login;
+exports.adminLogin = adminLogin;

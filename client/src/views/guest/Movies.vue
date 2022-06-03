@@ -44,11 +44,14 @@ import Axios from "axios";
                 }
                 this.requestStatus = 200;
             });
+
+            this.$store.dispatch("getLikes");
+            this.$store.dispatch("getEachComment");
         }
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .emptylist {
     width: auto;
     padding: 20px;
@@ -74,8 +77,10 @@ import Axios from "axios";
         padding: 110px 15px 0;
     }
 
-    .movies_section {
-        background-color: $c-3;
+    .movies_list {
+        .movies_section {
+            background-color: $c-3;
+        }
     }
 }
 </style>

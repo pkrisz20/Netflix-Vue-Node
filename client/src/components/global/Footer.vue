@@ -5,9 +5,9 @@
                 <div class="footer_top-socials">
                     <div class="icon"><i class="fab fa-facebook-f"></i></div>
                     <div class="icon"><i class="fab fa-twitter"></i></div>
-                    <div class="icon"><i class="fab fa-youtube"></i></div>
+                    <div class="icon"><i class="fab fa-reddit-alien"></i></div>
                     <div class="icon"><i class="fab fa-instagram"></i></div>
-                    <div class="icon"><i class="fab fa-discord"></i></div>
+                    <div class="icon"><i class="fab fa-github"></i></div>
                 </div>
 
                 <div class="footer_top-sites">
@@ -22,7 +22,7 @@
                     <span>|</span>
                     <a href="#" class="info">FAQ</a>
                     <span>|</span>
-                    <a href="#" class="info">Support</a>
+                    <a href="/support" class="info">Support</a>
                 </div>
             </div>
         </div>

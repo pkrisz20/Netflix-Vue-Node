@@ -1,9 +1,7 @@
 <template>
-<div class="login">
+<div class="login_view">
     <Header />
     <div class="container">
-        <img alt="login image" class="login-image" src="../../assets/images/movie-poster.jpg">
-
         <div class="login">
             <h2 class="login-title">Sign In</h2>
 
@@ -90,7 +88,7 @@ Axios.defaults.withCredentials = true;
 </script>
 
 <style lang="scss" scoped>
-    .login {
+    .login_view {
         position: relative;
         z-index: 0;
     }
@@ -98,7 +96,11 @@ Axios.defaults.withCredentials = true;
     .container {
         width: 100%;
         height: 100vh;
+        background-image: url('../../assets/images/movie-poster.jpg');
+        background-position: center;
+        background-size: cover;
         position: relative;
+        @include flexCenter();
 
         &::before {
             position: absolute;
@@ -110,22 +112,14 @@ Axios.defaults.withCredentials = true;
             background-color: rgba($c-black, 0.7);
         }
 
-        .login-image {
-            width: 100%;
-            height: 100vh;
-            @include object-fit();
-        }
-
         .login {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: rgba($c-black, 0.8);
             border-radius: 5px;
             padding: 50px;
             @include flexCenter();
             flex-direction: column;
+            position: relative;
+            z-index: 2;
 
             @media #{$r-max-tablet} {
                 padding: 35px;

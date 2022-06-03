@@ -50,13 +50,15 @@
                 </div>
 
                 <button class="search_box--submit" @click="executeFiltering">SEARCH</button>
-                <div class="search_box--message" v-if="message">{{ message }}</div>
+                <div class="search_box--message" v-if="filterError">{{ filterError }}</div>
             </div>
         </transition>
     </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
     name: "Filters",
     data() {
@@ -66,7 +68,7 @@ export default {
             filteredCategories: [],
             filterFromYear: null,
             filterToYear: null,
-            message: ""
+            filterError: ""
         }
     },
     props: { insideOf: String, clearButton: Number },
@@ -74,33 +76,47 @@ export default {
         executeFiltering() {
             if (!this.dateDisabled) {
                 if (!this.filterFromYear || !this.filterToYear) {
-                    this.message = "Fill each field, if you want to search by date";
+                    this.filterError = "Fill each field, if you want to search by date";
                 }
-                else if (this.filterFromYear < 1960) {
-                    this.message = "There are no movies in the database earlier than the '60s";
+                else if (this.filterFromYear < 1970) {
+                    this.filterError = "There are no movies in the database earlier than the '70s";
                 }
                 else if (this.filterToYear > new Date().getFullYear()) {
-                    this.message = `Nowdays it's ${new Date().getFullYear()}, and not ${this.filterToYear}`;
+                    this.filterError = `Nowdays it's ${new Date().getFullYear()}, and not ${this.filterToYear}`;
                 }
             }
 
             if (this.filteredCategories == 0) {
-                this.message = "Select at least a category";
+                this.filterError = "Select at least a category";
             }
             else {
+                //filtering favourites
                 if (this.$props.insideOf == "Favs") {
                     this.$store.dispatch("filterFavourites", [this.filteredCategories, this.filterFromYear, this.filterToYear]);
                     
-                    if (this.$store.state.filteredFavs.length > 0 && !this.$store.state.notFound)
+                    if (this.filteredFavs > 0)
                     {
+                        console.log('scrolling favs');
                         this.scrollTo('.movies_section');
                     }
                 }
+                //filtering each movie
                 else if (this.$props.insideOf == "All") {
                     this.$store.dispatch("searchMovies", [this.filteredCategories, this.filterFromYear, this.filterToYear]);
-                    
-                    if (this.$store.state.filteredMovies.length > 0 && !this.$store.state.notFound)
+
+                    if (this.filteredMovies > 0)
                     {
+                        console.log('scrolling');
+                        this.scrollTo('.movies_section');
+                    }
+                }
+                // filtering my list
+                else if (this.$props.insideOf == "MyList") {
+                    this.$store.dispatch("filterMyList", [this.filteredCategories, this.filterFromYear, this.filterToYear]);
+
+                    if (this.filteredMyList > 0)
+                    {
+                        console.log('scrolling mylist');
                         this.scrollTo('.movies_section');
                     }
                 }
@@ -132,6 +148,13 @@ export default {
                 top: document.querySelector(element).getBoundingClientRect().top - document.body.getBoundingClientRect().top - 100
             });
         }
+    },
+    computed: {
+        ...mapState({
+            filteredMovies: state => state.filteredMovies,
+            filteredFavs: state => state.filteredFavs,
+            filteredMyList: state => state.filteredMyList
+        })
     },
 }
 </script>

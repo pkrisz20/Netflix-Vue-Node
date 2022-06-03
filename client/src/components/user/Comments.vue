@@ -80,7 +80,7 @@
                             </button>
                         </div>
 
-                        <div class="right-side_reactions" v-if="returnLoginStatus && returnActiveUserID == item.user_id">
+                        <div class="right-side_reactions" v-if="(returnLoginStatus && returnActiveUserID == item.user_id) || returnAdminStatus">
                             <button @click="deleteComment(item.comment_id)" class="delete"><i class="fas fa-trash"></i> Delete</button>
                         </div>
                     </div>
@@ -125,7 +125,8 @@ import { mapState, mapGetters } from "vuex";
                 returnCommentsInfo: state => state.commentsInfo,
                 returnLoginStatus: state => state.isLoggedIn,
                 returnProfilePicture: state => state.actualUserData.image,
-                returnActiveUserID: state => state.actualUserData.userId
+                returnActiveUserID: state => state.actualUserData.userId,
+                returnAdminStatus: state => state.adminLoggedIn
             })
         },
         methods: {
@@ -217,7 +218,6 @@ import { mapState, mapGetters } from "vuex";
             }
         },
         created() {
-            // this.$store.dispatch("getLoginStatus");
             this.$store.dispatch("getComments", this.$props.movieID);
         }
     }

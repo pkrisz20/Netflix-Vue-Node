@@ -44,13 +44,16 @@ export default {
             }
             this.requestStatus = 200;
         });
-        this.$store.dispatch("getFavourites");
+        this.$store.dispatch('getAllMovies');
+        this.$store.dispatch("getEachComment");
+        this.$store.dispatch('getLikes');
+        this.$store.dispatch('getFavourites');
         this.$store.dispatch("getMyList");
     }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .emptylist {
     width: auto;
     padding: 20px;

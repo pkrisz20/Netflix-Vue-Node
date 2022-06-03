@@ -23,7 +23,7 @@
             <div class="search-box">
                 
                 <div class="search-box_results" v-if="this.searchText.length > 0">
-                    <h4 class="header">Results: {{ filterMovies(this.searchText).length }}</h4>
+                    <h4 class="header">{{ filterMovies(this.searchText).length > 1 ? 'Results:' : 'Result:' }} {{ filterMovies(this.searchText).length }}</h4>
                     <div class="container" v-for="(item, index) in filterMovies(this.searchText)" :key="index">
                         <router-link class="container_box" :to="{ path: '/detailsguest/' + item.id }">
                             <div class="container_box--image">
@@ -219,7 +219,7 @@ import { mapGetters } from "vuex";
         justify-content: space-between;
 
         @media #{$r-max-laptop-m} {
-            width: calc(100% - 30px); //I dont know from where comes this 30px
+            width: calc(100% - 30px);
             margin: 0;
         }
 

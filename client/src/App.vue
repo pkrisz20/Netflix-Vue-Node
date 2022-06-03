@@ -15,7 +15,15 @@ export default {
       else if (this.$store.state.isLoggedIn) {
         return;
       }
-    }
+    },
+    '$store.state.adminLoggedIn': function() {
+      if (!this.$store.state.adminLoggedIn) {
+        this.$router.push("/admin").catch(()=>{});
+      }
+      else if (this.$store.state.adminLoggedIn) {
+        return;
+      }
+    },
   }
 }
 </script>
@@ -25,6 +33,10 @@ export default {
   font-family: $c-main-font;
   margin: 0;
   padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {

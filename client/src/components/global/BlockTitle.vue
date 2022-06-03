@@ -11,7 +11,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .block_title {
     height: auto;
     padding: 90px 15px 0;

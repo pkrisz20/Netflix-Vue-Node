@@ -38,7 +38,8 @@ export default {
             httpStatusCode: state => state.httpStatus,
             mylist: state => state.mylist,
             filteredMyList: state => state.filteredMyList,
-            notFound: state => state.notFound
+            notFound: state => state.notFound,
+            messageFromList: state => state.messageFromList
         })
     },
     methods: {

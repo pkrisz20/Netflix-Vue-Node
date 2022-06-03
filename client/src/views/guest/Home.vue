@@ -3,7 +3,7 @@
     <Header />
     <Hero />
     <Commercial />
-    <BlockTitle :title="'Each category'"/>
+    <BlockTitle :title="'All categories'"/>
     <MovieList :movies=$store.state.list />
     <Footer />
   </div>

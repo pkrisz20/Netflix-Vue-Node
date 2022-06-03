@@ -1,4 +1,6 @@
-const insertMovie = (adminRouter, db) => adminRouter.post("/insert", (req, res) => {
+const { verifyJWT } = require('../JWT');
+
+const insertMovie = (adminRouter, db) => adminRouter.post("/insert", verifyJWT, (req, res) => {
     const { movieName, movieReview, file } = req.body;
     let buffer = null;
     let pictureType = "";

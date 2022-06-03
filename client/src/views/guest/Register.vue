@@ -1,9 +1,7 @@
 <template>
-<div class="register">
+<div class="register_view">
     <Header />
     <div class="container">
-        <img alt="register image" class="register-image" src="../../assets/images/movie-poster.jpg">
-
         <div class="register">
             <h2 class="register-title">Registration</h2>
 
@@ -133,7 +131,7 @@ import Axios from "axios";
 </script>
 
 <style lang="scss" scoped>
-    .register {
+    .register_view {
         position: relative;
         z-index: 0;
     }
@@ -141,7 +139,11 @@ import Axios from "axios";
     .container {
         width: 100%;
         height: 100vh;
+        background-image: url('../../assets/images/movie-poster.jpg');
+        background-position: center;
+        background-size: cover;
         position: relative;
+        @include flexCenter();
 
         &::before {
             position: absolute;
@@ -153,22 +155,14 @@ import Axios from "axios";
             background-color: rgba($c-black, 0.7);
         }
 
-        .register-image {
-            width: 100%;
-            height: 100vh;
-            @include object-fit();
-        }
-
         .register {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: rgba($c-black, 0.8);
             border-radius: 5px;
             padding: 50px;
             @include flexCenter();
             flex-direction: column;
+            position: relative;
+            z-index: 2;
 
             @media #{$r-max-tablet} {
                 padding: 35px;

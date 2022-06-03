@@ -28,7 +28,7 @@
             <div class="search-box desktop-hide">
 
                 <div class="search-box_results" v-if="this.searchText.length > 0">
-                    <h4 class="header">Results: {{ filterMovies(this.searchText).length }}</h4>
+                    <h4 class="header">{{ filterMovies(this.searchText).length > 1 ? 'Results:' : 'Result:' }} {{ filterMovies(this.searchText).length }}</h4>
                     <div class="container" v-for="(item, index) in filterMovies(this.searchText)" :key="index">
                         <router-link class="container_box" :to="{ path: '/detailsuser/' + item.id }">
                             <div class="container_box--image">
@@ -95,17 +95,6 @@
                     viewBox="0 0 47.971 47.971" xml:space="preserve">
                     <path d="M28.228 23.986 47.092 5.122a2.998 2.998 0 0 0 0-4.242 2.998 2.998 0 0 0-4.242 0L23.986 19.744 5.121.88a2.998 2.998 0 0 0-4.242 0 2.998 2.998 0 0 0 0 4.242l18.865 18.864L.879 42.85a2.998 2.998 0 1 0 4.242 4.241l18.865-18.864L42.85 47.091c.586.586 1.354.879 2.121.879s1.535-.293 2.121-.879a2.998 2.998 0 0 0 0-4.242L28.228 23.986z"/></svg>
             </div>
-            
-            <!-- CHATS ICON -->
-                <svg class="svg-chats" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324.143 324.143"
-                    style="enable-background:new 0 0 324.143 324.143" xml:space="preserve">
-                    <circle cx="88.071" cy="164.571" r="19"/><circle cx="162.071" cy="164.571" r="19"/>
-                    <path d="M162.071 0C73.162 0 .83 72.332.83 161.241c0 37.076 12.788 73.004 36.1 101.677-6.65 16.756-17.788 31.245-32.401 42.089a7.497 7.497
-                    0 0 0-2.94 7.177 7.497 7.497 0 0 0 4.985 5.942 111.667 111.667 0 0 0 36.182 6.017c19.572 0 38.698-5.093 55.569-14.763 20.158 8.696 41.584 13.104
-                    63.747 13.104 88.909 0 161.241-72.333 161.241-161.242S250.98 0 162.071 0zm0 307.483c-21.32 0-41.881-4.492-61.11-13.351a7.495 7.495 0 0 
-                    0-7.102.443c-15.313 9.529-32.985 14.566-51.104 14.566a96.601 96.601 0 0 1-17.981-1.684c12.521-12.12 22.014-26.95 27.788-43.547a7.499 7.499 0 0 0-1.398-7.354C28.378 230.07 15.83 196.22 15.83 161.241 15.83 80.604 81.434 15 162.071 15s146.241 65.604 146.241 146.241c.001 80.639-65.603 146.242-146.241 146.242z"/>
-                    <circle cx="236.071" cy="164.571" r="19"/>
-                </svg>
 
             <!-- NOTIFICATIONS PANEL ON DESKTOP VIEW -->
             <div class="user-box-notifications">

@@ -20,6 +20,8 @@ const { filterFavourites } = require("../movies/filterFavourites");
 const { searchMovies } = require("../movies/searchMovies");
 const { getMyList } = require("../movies/getMyList");
 const { addMyList } = require("../movies/addMyList");
+const { deleteFromList } = require("../movies/deleteFromList");
+const { filterMyList } = require("../movies/filterMyList");
 
 const express = require("express");
 const moviesRouter = express.Router();
@@ -45,5 +47,7 @@ filterFavourites(moviesRouter, db);
 searchMovies(moviesRouter, db);
 getMyList(moviesRouter, db);
 addMyList(moviesRouter, db);
+deleteFromList(moviesRouter, db);
+filterMyList(moviesRouter, db);
 
 exports.moviesRouter = moviesRouter;
